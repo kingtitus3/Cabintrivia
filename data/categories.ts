@@ -16,11 +16,14 @@ export const categories = [
     emoji: "🔟",
     subcategories: [
       "All Lists",
-      "Top 10 Most Popular",
-      "Top 10 Best-Selling",
-      "Top 10 Famous",
-      "Top 10 Classic",
-      "Top 10 Modern",
+      "Easy Party Starters",
+      "Everyday American Life",
+      "Fast Food & Snacks",
+      "Theme Park Rides",
+      "TV & Streaming Comfort Shows",
+      "90s & 2000s Nostalgia",
+      "Road Trips & Travel",
+      "Family & Kids Favorites",
       "Top 10 American Favorites"
     ]
   },

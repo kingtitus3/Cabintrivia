@@ -35,8 +35,8 @@ export default async function handler(
       : `the category "${category}"`;
     
     const subcategoryContext = isAllLists
-      ? "any interesting topic - choose from popular culture, food, sports, entertainment, technology, history, geography, or any other engaging subject that Americans would know"
-      : `subcategory "${subcategory}"`;
+      ? "any easy, fun topic – prefer everyday American life, food, theme parks, TV, streaming, pop music, holidays, toys, and other things most Americans would recognize"
+      : `subcategory "${subcategory}" (keep it fun and easy for a casual American audience)`;
     
     // Get successful topics from previous correct answers
     const successfulTopics = getSuccessfulTopics(category, subcategory);
@@ -50,13 +50,26 @@ export default async function handler(
       ? `\n\nAvoid these recently asked questions: ${recentQuestions.slice(-3).map(q => q.question).join("; ")}`
       : "";
     
-    const prompt = `Generate a "Top 10" list question for ${categoryContext} and ${subcategoryContext}.${topicsContext}${avoidContext}
+    const prompt = `You are writing *party-friendly* Top 10 lists for a live voice trivia game called Cabin Trivia.
+
+Generate a "Top 10" list question for ${categoryContext} and ${subcategoryContext}.${topicsContext}${avoidContext}
 
 Requirements:
-- Create a question asking for a top 10 list (e.g., "Name the top 10 most popular dog breeds in America" or "List the top 10 best-selling video games")
-- Provide exactly 10 items in the list, ranked from most popular/common to least
-- Make it fun and relevant to American culture
-- Return your response in this exact JSON format:
+- Audience: adults in the United States playing a casual living-room party game
+- Difficulty: **easy to medium** – players should usually know at least 6–8 of the 10 answers
+- Avoid niche, regional, or very obscure things. Prefer mainstream, everyday American culture.
+- If you mention theme park rides, restaurants, TV shows, movies, music, or products, they must be widely known nationally.
+
+Question style:
+- Create a clear Top 10 style question (e.g., "Name the top 10 most popular dog breeds in America" or "List the top 10 best-selling video games").
+- Phrase it so it feels fun to shout answers out loud with friends.
+
+Answer list:
+- Provide exactly 10 items in the list, ranked from most popular/common to least.
+- Use short, answerable phrases – what someone would actually shout (e.g., "Big Mac", "Space Mountain", "Coca-Cola", "The Office").
+- Do NOT include long descriptions in parentheses except to disambiguate brand/location when necessary.
+
+Return your response in this exact JSON format:
 {
   "question": "Your top 10 list question here?",
   "listItems": ["Item 1 (most popular)", "Item 2", "Item 3", "Item 4", "Item 5", "Item 6", "Item 7", "Item 8", "Item 9", "Item 10 (least popular)"]

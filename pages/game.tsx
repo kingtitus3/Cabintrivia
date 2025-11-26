@@ -4,7 +4,7 @@ import { useRouter } from "next/router";
 import React, { useEffect, useState, useCallback, useRef } from "react";
 import type { GameMode } from "../types/gameMode";
 import type { Round } from "../types/round";
-import { useDeepgramRecognition } from "../hooks/useDeepgramRecognition";
+import { useVoiceRecognition } from "../hooks/useVoiceRecognition";
 import { usePlayers } from "../hooks/usePlayers";
 import { useVoiceProfiles } from "../hooks/useVoiceProfiles";
 import PlayerSetup from "../components/PlayerSetup";
@@ -18,6 +18,7 @@ export default function GamePage() {
   const [selectedAnswer, setSelectedAnswer] = useState<string | null>(null);
   const [showResult, setShowResult] = useState(false);
   const [voiceTranscript, setVoiceTranscript] = useState<string>("");
+  const [fullTranscript, setFullTranscript] = useState<string>(""); // Running transcript of everything said
   const [showAnswers, setShowAnswers] = useState(true);
   const [gameStarted, setGameStarted] = useState(false);
   const [gameEnded, setGameEnded] = useState(false);
@@ -84,37 +85,49 @@ export default function GamePage() {
     [players]
   );
 
-  // Function to match spoken answer with displayed answers (ultra-lenient matching)
+  // Function to match spoken answer with displayed answers (ultra-lenient, per phrase only)
   const matchVoiceAnswer = useCallback(
-    (transcript: string, answers: string[]) => {
+    (transcript: string, answers: string[]): string | null => {
       const normalizedTranscript = transcript.toLowerCase().trim();
-      
-      if (normalizedTranscript.length < 2) return null;
-      
+
+      // Remove common filler words and punctuation
+      const cleanTranscript = normalizedTranscript
+        .replace(/^(the|a|an|its|it's)\s+/i, "")
+        .replace(/[.,!?;:]/g, "")
+        .trim();
+
+      if (cleanTranscript.length < 2) return null;
+
       // Try exact match first
       for (const answer of answers) {
-        if (answer.toLowerCase().trim() === normalizedTranscript) {
+        const normalizedAnswer = answer.toLowerCase().trim();
+        if (normalizedAnswer === normalizedTranscript || normalizedAnswer === cleanTranscript) {
           return answer;
         }
       }
 
-      // Try ANY partial match - if transcript appears anywhere in answer or vice versa
+      // Try ANY substring match - if transcript appears anywhere in item or vice versa
       for (const answer of answers) {
         const normalizedAnswer = answer.toLowerCase().trim();
+        const cleanAnswer = normalizedAnswer.replace(/^(the|a|an)\s+/i, "").trim();
+
         if (
+          cleanAnswer.includes(cleanTranscript) ||
+          cleanTranscript.includes(cleanAnswer) ||
           normalizedAnswer.includes(normalizedTranscript) ||
           normalizedTranscript.includes(normalizedAnswer)
         ) {
-          return answer; // Return immediately on ANY match
+          return answer;
         }
       }
 
       // Try word-by-word matching - ANY word match triggers
-      const transcriptWords = normalizedTranscript.split(/\s+/).filter(w => w.length >= 2);
+      const transcriptWords = cleanTranscript.split(/\s+/).filter((w) => w.length >= 2);
+
       for (const answer of answers) {
-        const answerWords = answer.toLowerCase().trim().split(/\s+/).filter(w => w.length >= 2);
-        
-        // Check if ANY word from transcript matches ANY word in answer
+        const normalizedAnswer = answer.toLowerCase().trim();
+        const answerWords = normalizedAnswer.split(/\s+/).filter((w) => w.length >= 2);
+
         for (const tWord of transcriptWords) {
           for (const aWord of answerWords) {
             if (
@@ -123,24 +136,24 @@ export default function GamePage() {
               tWord.includes(aWord) ||
               aWord.startsWith(tWord) ||
               tWord.startsWith(aWord) ||
-              // Even partial character matches
-              (tWord.length >= 2 && aWord.length >= 2 && 
-               (aWord.substring(0, 2) === tWord.substring(0, 2) ||
-                aWord.substring(0, 3) === tWord.substring(0, 3)))
+              (tWord.length >= 2 &&
+                aWord.length >= 2 &&
+                (aWord.substring(0, 2) === tWord.substring(0, 2) ||
+                  aWord.substring(0, 3) === tWord.substring(0, 3)))
             ) {
-              return answer; // Return immediately on ANY match
+              return answer;
             }
           }
         }
       }
 
       // Try character-level matching - if first few characters match
-      if (normalizedTranscript.length >= 2) {
+      if (cleanTranscript.length >= 2) {
         for (const answer of answers) {
           const normalizedAnswer = answer.toLowerCase().trim();
-          const transcriptStart = normalizedTranscript.substring(0, Math.min(3, normalizedTranscript.length));
+          const transcriptStart = cleanTranscript.substring(0, Math.min(3, cleanTranscript.length));
           const answerStart = normalizedAnswer.substring(0, Math.min(3, normalizedAnswer.length));
-          
+
           if (transcriptStart === answerStart && transcriptStart.length >= 2) {
             return answer;
           }
@@ -189,6 +202,8 @@ export default function GamePage() {
       if (!round || showResult) return;
 
       setVoiceTranscript(transcript);
+      // Keep fullTranscript only for display; matching is per-phrase now
+      setFullTranscript((prev) => (prev ? `${prev} ${transcript}` : transcript));
       
       // In competitive mode, identify speaker automatically
       if (gameMode === "competitive" && players.length > 0 && profiles.length > 0 && analyserRef.current) {
@@ -210,7 +225,7 @@ export default function GamePage() {
           const identifiedProfile = await identifySpeaker(audioBuffer);
           
           const matchedAnswer = matchVoiceAnswer(transcript, round.answers);
-          
+
           if (matchedAnswer && identifiedProfile) {
             // Found speaker automatically - give credit
             const player = players.find((p) => p.id === identifiedProfile.id);
@@ -243,10 +258,13 @@ export default function GamePage() {
 
   // Note: Deepgram handles multiple speakers through its own diarization if needed
 
-  const { isListening, isSupported, error: voiceError, startListening, stopListening } =
-    useDeepgramRecognition({
+  const { isListening, isSupported, startListening, stopListening } =
+    useVoiceRecognition({
       onResult: handleVoiceResult,
+      onMultipleResults: gameMode === "competitive" ? handleMultipleVoiceResults : undefined,
       continuous: false,
+      interimResults: false,
+      detectMultipleSpeakers: gameMode === "competitive",
     });
 
   // Auto-start voice recognition when round loads - always start for new questions
@@ -356,6 +374,7 @@ export default function GamePage() {
     setSelectedAnswer(null);
     setShowResult(false);
     setVoiceTranscript("");
+    setFullTranscript(""); // Clear transcript for new question
     // Don't reset showAnswers - keep it in whatever state user set it
     setLoading(true);
     // Don't stop listening here - it will restart automatically when new round loads
@@ -511,14 +530,16 @@ export default function GamePage() {
 
   if (loading) {
     return (
-      <div className="min-h-screen bg-gray-100 flex items-center justify-center">
-        <div className="text-center">
-          <div className="text-4xl mb-4">🎮</div>
-          <p className="text-xl text-gray-700">Loading question...</p>
-          <p className="text-sm text-gray-500 mt-4">
-            Category: {category || "..."} | Subcategory: {subcategory || "..."}
+      <div className="min-h-[calc(100vh-6rem)] flex items-center justify-center">
+        <div className="cabin-panel px-8 py-8 text-center max-w-md w-full">
+          <div className="text-4xl mb-3">🎮</div>
+          <p className="text-xl font-semibold text-slate-50 mb-1">Stoking the campfire…</p>
+          <p className="text-sm text-slate-400">
+            Fetching a fresh question for{" "}
+            <span className="font-medium text-amber-200">
+              {subcategory || "your next round"}
+            </span>
           </p>
-          <p className="text-xs text-gray-400 mt-2">Check browser console (F12) for details</p>
         </div>
       </div>
     );
@@ -526,15 +547,16 @@ export default function GamePage() {
 
   if (error) {
     return (
-      <div className="min-h-screen bg-gray-100 flex items-center justify-center p-6">
-        <div className="text-center max-w-md">
-          <div className="text-4xl mb-4">❌</div>
-          <p className="text-xl text-red-600 mb-4">{error}</p>
+      <div className="min-h-[calc(100vh-6rem)] flex items-center justify-center px-4">
+        <div className="cabin-panel px-8 py-8 text-center max-w-md w-full">
+          <div className="text-4xl mb-3">❌</div>
+          <p className="text-xl font-semibold text-red-300 mb-2">Something went wrong</p>
+          <p className="text-sm text-red-200 mb-4">{error}</p>
           <button
             onClick={() => router.push("/categories")}
-            className="bg-blue-500 text-white px-6 py-2 rounded-lg hover:bg-blue-600"
+            className="inline-flex items-center justify-center rounded-lg bg-amber-500 px-5 py-2 text-sm font-semibold text-slate-900 hover:bg-amber-400"
           >
-            Back to Categories
+            ⬅ Back to categories
           </button>
         </div>
       </div>
@@ -542,27 +564,18 @@ export default function GamePage() {
   }
 
   if (!round) {
-    return (
-      <div className="min-h-screen bg-gray-100 flex items-center justify-center">
-        <div className="text-center">
-          <div className="text-4xl mb-4">⏳</div>
-          <p className="text-xl text-gray-700">Preparing question...</p>
-          <p className="text-sm text-gray-500 mt-2">Category: {category || "loading..."}</p>
-          <p className="text-sm text-gray-500">Subcategory: {subcategory || "loading..."}</p>
-        </div>
-      </div>
-    );
+    return null;
   }
 
   // Use answers in original order (no shuffling)
   const answers = round.answers;
 
   return (
-    <div className="min-h-screen bg-gray-100 p-6">
-      <div className="max-w-3xl mx-auto">
-        {/* Header */}
-        <div className="mb-6 text-center">
-          <div className="flex items-center justify-between mb-4">
+    <div className="min-h-[calc(100vh-6rem)] py-4">
+      <div className="cabin-panel px-5 py-6 md:px-8 md:py-8 max-w-3xl mx-auto">
+        {/* Header / Controls */}
+        <div className="mb-6">
+          <div className="flex items-start justify-between gap-3 mb-3">
             <button
               onClick={() => {
                 if (gameMode === "competitive") {
@@ -571,35 +584,57 @@ export default function GamePage() {
                   router.push("/mode");
                 }
               }}
-              className="px-4 py-2 bg-gray-500 text-white rounded-lg hover:bg-gray-600 text-sm"
+              className="inline-flex items-center gap-2 rounded-lg bg-slate-800/90 px-3 py-1.5 text-xs font-medium text-slate-200 hover:bg-slate-700"
             >
-              {gameMode === "competitive" ? "End Game" : "Back to Start"}
+              <span className="text-sm">←</span>
+              <span>{gameMode === "competitive" ? "End game" : "Back to start"}</span>
             </button>
-            <h1 className="text-3xl font-bold">Cabin Trivia</h1>
-            <div className="w-24"></div> {/* Spacer for centering */}
+
+            <div className="text-right">
+              <div className="cabin-chip mb-1 inline-flex">
+                <span className="mr-1">🔥</span>
+                {modeDisplay}
+              </div>
+              <div className="flex flex-wrap justify-end gap-1 text-[11px] text-slate-400">
+                {category && (
+                  <span className="cabin-tag">
+                    <span className="text-emerald-300">Category</span>· {category}
+                  </span>
+                )}
+                {subcategory && (
+                  <span className="cabin-tag">
+                    <span className="text-sky-300">Pack</span>· {subcategory}
+                  </span>
+                )}
+              </div>
+            </div>
           </div>
-          <p className="text-gray-600">{modeDisplay}</p>
-          
+
           {/* Scoreboard for competitive mode */}
           {gameMode === "competitive" && players.length > 0 && (
-            <div className="mt-4 bg-white rounded-lg shadow p-4">
-              <h3 className="text-sm font-semibold text-gray-700 mb-2">Scores</h3>
-              <div className="flex flex-wrap gap-3 justify-center">
+            <div className="mt-3 rounded-2xl border border-slate-800/80 bg-slate-900/70 px-4 py-3">
+              <h3 className="text-[11px] font-semibold uppercase tracking-[0.16em] text-slate-400 mb-2">
+                Cabin leaderboard
+              </h3>
+              <div className="flex flex-wrap gap-2">
                 {players
+                  .slice()
                   .sort((a, b) => b.score - a.score)
                   .map((player) => (
                     <div
                       key={player.id}
-                      className={`px-4 py-2 rounded-lg flex items-center gap-2 ${
-                        activePlayer === player.id ? "ring-2 ring-blue-500" : ""
+                      className={`flex items-center gap-2 rounded-full px-3 py-1.5 text-xs ${
+                        activePlayer === player.id
+                          ? "bg-emerald-500/10 border border-emerald-400/60"
+                          : "bg-slate-800/80 border border-slate-700/80"
                       }`}
-                      style={{
-                        backgroundColor: `${player.color}20`,
-                        borderLeft: `4px solid ${player.color}`,
-                      }}
                     >
-                      <span className="font-semibold">{player.name}</span>
-                      <span className="text-lg font-bold">{player.score}</span>
+                      <span
+                        className="h-2.5 w-2.5 rounded-full"
+                        style={{ backgroundColor: player.color }}
+                      />
+                      <span className="font-medium text-slate-100">{player.name}</span>
+                      <span className="text-slate-400">· {player.score}</span>
                     </div>
                   ))}
               </div>
@@ -609,122 +644,133 @@ export default function GamePage() {
 
         {/* Voice Status */}
         {isSupported && (
-          <div className="bg-white rounded-xl shadow-lg p-4 mb-4">
-            <div className="flex items-center justify-between">
+          <div className="mb-4 rounded-2xl border border-slate-800/80 bg-slate-900/80 px-4 py-3">
+            <div className="flex items-center justify-between gap-3">
               <div className="flex items-center gap-3">
                 {isListening && !showResult ? (
                   <>
-                    <span className="text-2xl animate-pulse">🔴</span>
-                    <span className="text-lg font-semibold text-gray-700">
-                      Listening for your answer...
-                    </span>
+                    <span className="text-xl animate-pulse">🔴</span>
+                    <div className="text-sm">
+                      <p className="font-semibold text-slate-100">
+                        Listening for your next shout…
+                      </p>
+                      {voiceTranscript && (
+                        <p className="mt-1 text-xs text-slate-400 italic">
+                          Heard: “{voiceTranscript}”
+                        </p>
+                      )}
+                    </div>
                   </>
                 ) : showResult ? (
                   <>
-                    <span className="text-2xl">🎤</span>
-                    <span className="text-lg font-semibold text-gray-600">
-                      Voice recognition paused
-                    </span>
+                    <span className="text-xl">🎤</span>
+                    <p className="text-sm font-semibold text-slate-300">
+                      Answer locked — get ready for the next one.
+                    </p>
                   </>
                 ) : (
                   <>
-                    <span className="text-2xl">🎤</span>
-                    <span className="text-lg font-semibold text-gray-600">
-                      Starting voice recognition...
-                    </span>
+                    <span className="text-xl">🎤</span>
+                    <p className="text-sm font-semibold text-slate-300">
+                      Tap restart if the cabin gets too loud.
+                    </p>
                   </>
                 )}
               </div>
               {!showResult && (
                 <button
                   onClick={isListening ? stopListening : startListening}
-                  className="text-sm text-blue-600 hover:text-blue-800 underline"
+                  className="text-xs font-semibold text-amber-300 hover:text-amber-200 underline"
                 >
-                  {isListening ? "Stop" : "Restart"}
+                  {isListening ? "Pause listening" : "Restart listening"}
                 </button>
               )}
             </div>
-            {voiceTranscript && !showResult && (
-              <div className="mt-2 text-sm text-gray-600 italic">
-                Heard: &quot;{voiceTranscript}&quot;
+            {fullTranscript && !showResult && (
+              <div className="mt-2 max-h-16 overflow-y-auto rounded-md bg-slate-950/70 px-3 py-2 text-[11px] text-slate-400">
+                <div className="mb-1 font-semibold text-slate-300 text-[11px]">
+                  Cabin transcript
+                </div>
+                <p>{fullTranscript}</p>
               </div>
             )}
           </div>
         )}
 
         {!isSupported && (
-          <div className="bg-yellow-50 border border-yellow-200 rounded-lg p-3 mb-4 text-center text-sm text-yellow-800">
-            Voice recognition not supported in this browser. Please use a modern browser with microphone access.
-          </div>
-        )}
-        {voiceError && (
-          <div className="bg-red-50 border border-red-200 rounded-lg p-3 mb-4 text-center text-sm text-red-800">
-            ⚠️ {voiceError}
+          <div className="mb-4 rounded-2xl border border-amber-500/30 bg-amber-500/10 px-4 py-3 text-center text-xs text-amber-100">
+            Voice recognition isn’t available in this browser. Try Chrome or Edge for the full
+            Cabin Trivia experience.
           </div>
         )}
 
         {/* Question */}
-        <div className="bg-white rounded-xl shadow-lg p-8 mb-6">
-          <div className="mb-6">
-            <div className="flex items-start justify-between gap-4 mb-4">
-              <h2 className="text-2xl font-semibold text-center flex-1">{round.question}</h2>
-              {!showResult && (
-                <button
-                  onClick={() => setShowAnswers(!showAnswers)}
-                  className="px-3 py-1 text-sm bg-gray-200 hover:bg-gray-300 rounded-lg transition whitespace-nowrap"
-                  title={showAnswers ? "Hide answers" : "Show answers"}
-                >
-                  {showAnswers ? "🙈 Hide" : "👁️ Show"}
-                </button>
-              )}
-            </div>
+        <div className="rounded-2xl border border-slate-800/80 bg-slate-900/80 px-5 py-6 mb-5">
+          <div className="mb-4 flex items-start justify-between gap-3">
+            <h2 className="text-xl md:text-2xl font-semibold tracking-tight flex-1">
+              {round.question}
+            </h2>
+            {!showResult && (
+              <button
+                onClick={() => setShowAnswers(!showAnswers)}
+                className="inline-flex items-center gap-1 rounded-full bg-slate-800/90 px-3 py-1 text-xs font-medium text-slate-200 hover:bg-slate-700"
+                title={showAnswers ? "Hide answers" : "Show answers"}
+              >
+                <span>{showAnswers ? "🙈" : "👁️"}</span>
+                <span>{showAnswers ? "Hide options" : "Show options"}</span>
+              </button>
+            )}
           </div>
 
           {/* Answers */}
           {showAnswers || showResult ? (
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
               {answers.map((answer, index) => {
-              const isSelected = selectedAnswer === answer;
-              const isCorrect = answer === round.correctAnswer;
-              const showCorrect = showResult && isCorrect;
-              const showIncorrect = showResult && isSelected && !isCorrect;
+                const isSelected = selectedAnswer === answer;
+                const isCorrect = answer === round.correctAnswer;
+                const showCorrect = showResult && isCorrect;
+                const showIncorrect = showResult && isSelected && !isCorrect;
 
-              let buttonClass = "p-4 border-2 rounded-lg text-left transition-all hover:shadow-md ";
-              
-              if (showResult) {
-                if (showCorrect) {
-                  buttonClass += "bg-green-100 border-green-500 text-green-800";
-                } else if (showIncorrect) {
-                  buttonClass += "bg-red-100 border-red-500 text-red-800";
+                let buttonClass =
+                  "p-3.5 md:p-4 rounded-xl text-left text-sm md:text-base transition-all border-2 ";
+
+                if (showResult) {
+                  if (showCorrect) {
+                    buttonClass +=
+                      "bg-emerald-500/15 border-emerald-400 text-emerald-100 shadow-md shadow-emerald-500/20";
+                  } else if (showIncorrect) {
+                    buttonClass +=
+                      "bg-rose-500/10 border-rose-500/80 text-rose-100 shadow-md shadow-rose-500/20";
+                  } else {
+                    buttonClass += "bg-slate-900/80 border-slate-700/80 text-slate-300";
+                  }
                 } else {
-                  buttonClass += "bg-gray-50 border-gray-300 text-gray-600";
+                  buttonClass += isSelected
+                    ? "bg-amber-500/15 border-amber-400 text-amber-100"
+                    : "bg-slate-900/80 border-slate-700/80 text-slate-100 hover:border-amber-400/60 hover:bg-slate-800/80";
                 }
-              } else {
-                buttonClass += isSelected
-                  ? "bg-blue-100 border-blue-500"
-                  : "bg-white border-gray-300 hover:border-blue-300";
-              }
 
-              return (
-                <button
-                  key={index}
-                  onClick={() => handleAnswerSelect(answer)}
-                  disabled={showResult}
-                  className={buttonClass}
-                >
-                  <div className="flex items-center justify-between">
-                    <span>{answer}</span>
-                    {showCorrect && <span className="text-2xl">✓</span>}
-                    {showIncorrect && <span className="text-2xl">✗</span>}
-                  </div>
-                </button>
-              );
-            })}
+                return (
+                  <button
+                    key={index}
+                    onClick={() => handleAnswerSelect(answer)}
+                    disabled={showResult}
+                    className={buttonClass}
+                  >
+                    <div className="flex items-center justify-between gap-2">
+                      <span className="flex-1">{answer}</span>
+                      {showCorrect && <span className="text-xl">✓</span>}
+                      {showIncorrect && <span className="text-xl">✗</span>}
+                    </div>
+                  </button>
+                );
+              })}
             </div>
           ) : (
-            <div className="text-center py-8">
-              <p className="text-gray-500 text-lg">
-                Answers are hidden. Answer by voice or click "Show" to reveal options.
+            <div className="text-center py-6">
+              <p className="text-slate-400 text-sm md:text-base">
+                Answers are hidden. Shout your guess to the cabin or tap{" "}
+                <span className="font-semibold">Show options</span> if you get stuck.
               </p>
             </div>
           )}
@@ -735,9 +781,10 @@ export default function GamePage() {
           <div className="text-center">
             <button
               onClick={handleNextRound}
-              className="bg-blue-500 text-white px-8 py-3 rounded-lg hover:bg-blue-600 text-lg font-semibold"
+              className="inline-flex items-center gap-2 rounded-full bg-amber-500 px-8 py-3 text-sm md:text-base font-semibold text-slate-900 hover:bg-amber-400"
             >
-              Next Question
+              <span>Next Question</span>
+              <span>→</span>
             </button>
           </div>
         )}

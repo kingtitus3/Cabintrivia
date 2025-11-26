@@ -4,7 +4,7 @@ import { useRouter } from "next/router";
 import React, { useEffect, useState, useCallback } from "react";
 import type { GameMode } from "../types/gameMode";
 import type { TopTenRound } from "../types/topTenRound";
-import { useDeepgramRecognition } from "../hooks/useDeepgramRecognition";
+import { useVoiceRecognition } from "../hooks/useVoiceRecognition";
 
 export default function TopTenPage() {
   const router = useRouter();
@@ -14,6 +14,7 @@ export default function TopTenPage() {
   const [error, setError] = useState<string | null>(null);
   const [foundItems, setFoundItems] = useState<Set<string>>(new Set());
   const [voiceTranscript, setVoiceTranscript] = useState<string>("");
+  const [fullTranscript, setFullTranscript] = useState<string>(""); // Running transcript of everything said
   const [showAllAnswers, setShowAllAnswers] = useState(false);
 
   const gameMode = (mode as GameMode) || "party";
@@ -30,7 +31,10 @@ export default function TopTenPage() {
         .replace(/[.,!?;:]/g, "")
         .trim();
       
-      if (cleanTranscript.length < 1) return null;
+      if (cleanTranscript.length < 1) {
+        console.log(`❌ Transcript too short: "${transcript}"`);
+        return null;
+      }
       
       console.log("🔍 Matching transcript:", cleanTranscript, "against", listItems);
       
@@ -38,7 +42,7 @@ export default function TopTenPage() {
       for (const item of listItems) {
         const normalizedItem = item.toLowerCase().trim();
         if (normalizedItem === normalizedTranscript || normalizedItem === cleanTranscript) {
-          console.log("✅ Exact match:", item);
+          console.log(`✅ Exact match: "${transcript}" → "${item}"`);
           return item;
         }
       }
@@ -48,17 +52,14 @@ export default function TopTenPage() {
         const normalizedItem = item.toLowerCase().trim();
         const cleanItem = normalizedItem.replace(/^(the|a|an)\s+/i, "").trim();
         
-        // If ANY part matches, return it (even 1 character if long enough)
-        if (cleanTranscript.length >= 2 && cleanItem.length >= 2) {
-          if (
-            cleanItem.includes(cleanTranscript) ||
-            cleanTranscript.includes(cleanItem) ||
-            normalizedItem.includes(normalizedTranscript) ||
-            normalizedTranscript.includes(normalizedItem)
-          ) {
-            console.log("✅ Substring match:", item, "for transcript:", cleanTranscript);
-            return item;
-          }
+        if (
+          cleanItem.includes(cleanTranscript) ||
+          cleanTranscript.includes(cleanItem) ||
+          normalizedItem.includes(normalizedTranscript) ||
+          normalizedTranscript.includes(normalizedItem)
+        ) {
+          console.log(`✅ Substring match: "${transcript}" → "${item}"`);
+          return item;
         }
       }
 
@@ -69,10 +70,8 @@ export default function TopTenPage() {
         const normalizedItem = item.toLowerCase().trim();
         const itemWords = normalizedItem.split(/\s+/).filter(w => w.length >= 1);
         
-        // Check if ANY word from transcript matches ANY word in item
         for (const tWord of transcriptWords) {
           for (const iWord of itemWords) {
-            // Ultra-lenient: if words share ANY characters or one contains the other
             const firstTwoMatch = tWord.length >= 1 && iWord.length >= 1 && 
               iWord.substring(0, Math.min(2, iWord.length)) === tWord.substring(0, Math.min(2, tWord.length));
             const firstThreeMatch = tWord.length >= 1 && iWord.length >= 1 && 
@@ -93,8 +92,8 @@ export default function TopTenPage() {
               endsWithMatch1 ||
               endsWithMatch2
             ) {
-              console.log("✅ Word match:", item, "matched word:", tWord, "with", iWord);
-              return item; // Return immediately on ANY match
+              console.log(`✅ Word match: "${transcript}" → "${item}" (word: "${tWord}" vs "${iWord}")`);
+              return item;
             }
           }
         }
@@ -106,45 +105,28 @@ export default function TopTenPage() {
           const normalizedItem = item.toLowerCase().trim();
           const cleanItem = normalizedItem.replace(/^(the|a|an)\s+/i, "").trim();
           
-          // Check if first 2-4 characters match (very lenient)
-          for (let len = 2; len <= Math.min(4, cleanTranscript.length, cleanItem.length); len++) {
-            const transcriptStart = cleanTranscript.substring(0, len);
-            const itemStart = cleanItem.substring(0, len);
-            
-            if (transcriptStart === itemStart && transcriptStart.length >= 2) {
-              console.log("✅ Start match:", item, "start:", transcriptStart);
-              return item;
-            }
+          // Check if first 2-3 characters match
+          const transcriptStart = cleanTranscript.substring(0, Math.min(3, cleanTranscript.length));
+          const itemStart = cleanItem.substring(0, Math.min(3, cleanItem.length));
+          
+          if (transcriptStart === itemStart && transcriptStart.length >= 2) {
+            console.log(`✅ Char start match: "${transcript}" → "${item}"`);
+            return item;
           }
           
           // Check if transcript ends match
-          if (cleanTranscript.length >= 2 && cleanItem.length >= 2) {
-            for (let len = 2; len <= Math.min(4, cleanTranscript.length, cleanItem.length); len++) {
-              const transcriptEnd = cleanTranscript.substring(Math.max(0, cleanTranscript.length - len));
-              const itemEnd = cleanItem.substring(Math.max(0, cleanItem.length - len));
-              if (transcriptEnd === itemEnd) {
-                console.log("✅ End match:", item, "end:", transcriptEnd);
-                return item;
-              }
+          if (cleanTranscript.length >= 3 && cleanItem.length >= 3) {
+            const transcriptEnd = cleanTranscript.substring(Math.max(0, cleanTranscript.length - 3));
+            const itemEnd = cleanItem.substring(Math.max(0, cleanItem.length - 3));
+            if (transcriptEnd === itemEnd) {
+              console.log(`✅ Char end match: "${transcript}" → "${item}"`);
+              return item;
             }
           }
         }
       }
 
-      // Last resort: check if any part of any word matches
-      const allTranscriptChars = cleanTranscript.replace(/\s+/g, "");
-      for (const item of listItems) {
-        const normalizedItem = item.toLowerCase().trim();
-        const allItemChars = normalizedItem.replace(/\s+/g, "");
-        
-        // If transcript characters appear in order in item (fuzzy sequence match)
-        if (allTranscriptChars.length >= 2 && allItemChars.includes(allTranscriptChars.substring(0, Math.min(3, allTranscriptChars.length)))) {
-          console.log("✅ Character sequence match:", item);
-          return item;
-        }
-      }
-
-      console.log("❌ No match found for:", cleanTranscript);
+      console.log(`❌ No match for "${transcript}". Available: ${listItems.join(", ")}`);
       return null;
     },
     []
@@ -160,6 +142,7 @@ export default function TopTenPage() {
 
       console.log("🎤 Voice result received:", transcript);
       setVoiceTranscript(transcript);
+      setFullTranscript((prev) => (prev ? `${prev} ${transcript}` : transcript));
       
       const matchedItem = matchVoiceAnswer(transcript, round.listItems);
 
@@ -173,8 +156,6 @@ export default function TopTenPage() {
             return prev; // Already found, don't update
           }
           
-          // Found a new item!
-          console.log(`🎉 Adding new item to found list: "${matchedItem}"`);
           const newSet = new Set([...prev, matchedItem]);
           console.log(`📊 Progress: ${newSet.size} / ${round.listItems.length} found`);
           
@@ -193,20 +174,23 @@ export default function TopTenPage() {
           
           return newSet;
         });
+
+        // Reset transcripts after a successful match so the next answer starts clean
+        setVoiceTranscript("");
+        setFullTranscript("");
       } else {
-        // Log when no match is found for debugging
         console.log(`❌ No match for: "${transcript}"`);
         console.log("📋 Available items:", round.listItems);
-        console.log("🔍 Trying to match against:", round.listItems.map(item => item.toLowerCase()));
       }
     },
     [round, matchVoiceAnswer]
   );
 
-  const { isListening, isSupported, error: voiceError, startListening, stopListening } =
-    useDeepgramRecognition({
+  const { isListening, isSupported, startListening, stopListening } =
+    useVoiceRecognition({
       onResult: handleVoiceResult,
       continuous: true, // Keep listening for multiple answers
+      interimResults: false,
     });
 
   // Auto-start voice recognition when round loads - always start for new rounds
@@ -247,6 +231,7 @@ export default function TopTenPage() {
         setError(null);
         // Don't stop listening here - it will restart automatically when new round loads
         setFoundItems(new Set());
+        setFullTranscript(""); // Clear transcript for new round
         
         console.log("Fetching top ten list with:", { category, subcategory });
         
@@ -297,6 +282,7 @@ export default function TopTenPage() {
   const handleNextRound = useCallback(() => {
     setFoundItems(new Set());
     setVoiceTranscript("");
+    setFullTranscript(""); // Clear transcript for new round
     setShowAllAnswers(false); // Reset show answers for new round
     setLoading(true);
     stopListening();
@@ -444,21 +430,22 @@ export default function TopTenPage() {
                 Heard: &quot;{voiceTranscript}&quot;
               </div>
             )}
+            {fullTranscript && (
+              <div className="mt-2 p-2 bg-gray-50 rounded text-xs text-gray-500 max-h-20 overflow-y-auto">
+                <div className="font-semibold mb-1">Full Transcript:</div>
+                <div>{fullTranscript}</div>
+              </div>
+            )}
             {!isListening && foundItems.size < 10 && (
               <div className="mt-2 text-xs text-yellow-600">
                 ⚠️ Voice recognition stopped. Click &quot;Start Listening&quot; to continue.
-              </div>
-            )}
-            {voiceError && (
-              <div className="mt-2 text-xs text-red-600">
-                ⚠️ {voiceError}
               </div>
             )}
           </div>
         )}
         {!isSupported && (
           <div className="bg-yellow-50 border border-yellow-200 rounded-lg p-3 mb-4 text-center text-sm text-yellow-800">
-            Voice recognition not supported in this browser. Please use a modern browser with microphone access.
+            Voice recognition not supported in this browser. Please use Chrome or Edge.
           </div>
         )}
 

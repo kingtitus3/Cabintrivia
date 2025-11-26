@@ -17,13 +17,12 @@ export default function CategoriesPage() {
 
   const handleSubcategorySelect = (sub: string, gameType: "trivia" | "topten" = "trivia") => {
     const { mode } = router.query;
-    // If category is "top_10", automatically use Top 10 Lists mode
     const isTopTenCategory = activeCategory?.id === "top_10";
-    const pathname = (gameType === "topten" || isTopTenCategory) ? "/topten" : "/game";
+    const pathname = gameType === "topten" || isTopTenCategory ? "/topten" : "/game";
     router.push({
       pathname,
       query: {
-        mode: mode || "party", // Default to party if mode not provided
+        mode: mode || "party",
         category: activeCategory?.id,
         subcategory: sub,
       },
@@ -31,13 +30,28 @@ export default function CategoriesPage() {
   };
 
   return (
-    <div className="min-h-screen bg-gray-100 p-6">
-      <h1 className="text-3xl font-bold text-center mb-6">Choose a Category</h1>
+    <div className="min-h-[calc(100vh-6rem)] py-4">
+      <div className="cabin-panel px-5 py-6 md:px-8 md:py-8">
+        <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4 mb-6">
+          <div>
+            <p className="cabin-chip mb-3 inline-flex">
+              <span>Pick Your Trail</span>
+            </p>
+            <h1 className="text-2xl md:text-3xl font-semibold tracking-tight">
+              Where are we exploring tonight?
+            </h1>
+            <p className="mt-2 text-slate-400 text-sm md:text-base max-w-xl">
+              From cozy cabin kitchens to national parks and classic TV nights,
+              choose a pack that feels like your crew.
+            </p>
+          </div>
+        </div>
 
-      <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6 max-w-5xl mx-auto">
-        {categories.map((cat) => (
-          <CategoryCard key={cat.id} category={cat} onSelect={handleCategorySelect} />
-        ))}
+        <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4 md:gap-6">
+          {categories.map((cat) => (
+            <CategoryCard key={cat.id} category={cat} onSelect={handleCategorySelect} />
+          ))}
+        </div>
       </div>
 
       {activeCategory && (

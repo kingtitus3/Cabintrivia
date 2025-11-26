@@ -20,33 +20,39 @@ export default function SubcategoryModal({
   const isTopTenCategory = categoryId === "top_10";
   
   return (
-    <div className="fixed inset-0 bg-black bg-opacity-50 flex justify-center items-center p-6">
-      <div className="bg-white w-full max-w-md rounded-xl shadow-lg p-6">
-        <h2 className="text-xl font-bold mb-4 text-center">{categoryName}</h2>
+    <div className="fixed inset-0 bg-slate-950/80 backdrop-blur-sm flex justify-center items-center p-4 md:p-6 z-40">
+      <div className="cabin-panel w-full max-w-md px-5 py-5 md:px-6 md:py-6">
+        <div className="mb-4 text-center">
+          <p className="cabin-chip mx-auto mb-3">
+            <span className="mr-1">📚</span> {categoryName}
+          </p>
+          <p className="text-xs text-slate-400">
+            Pick a trail within this pack – you can always jump to Top 10 mode.
+          </p>
+        </div>
 
-        <div className="grid grid-cols-1 gap-3 mb-4">
+        <div className="grid grid-cols-1 gap-3 mb-4 max-h-[320px] overflow-y-auto pr-1">
           {subcategories.map((sub) => (
             <div key={sub} className="flex gap-2">
               {isTopTenCategory ? (
-                // For Top 10 Lists category, main button goes directly to Top 10 Lists mode
                 <button
                   onClick={() => onSelect(sub, "topten")}
-                  className="flex-1 p-3 border rounded-lg bg-blue-50 hover:bg-blue-100 text-left font-semibold"
+                  className="flex-1 px-3 py-2.5 rounded-lg border border-amber-400/50 bg-amber-500/10 hover:bg-amber-500/20 text-left font-semibold text-amber-100 text-sm flex items-center gap-2"
                 >
-                  🔟 {sub}
+                  <span className="text-lg">🔟</span>
+                  <span>{sub}</span>
                 </button>
               ) : (
-                // For other categories, show both options
                 <>
                   <button
                     onClick={() => onSelect(sub, "trivia")}
-                    className="flex-1 p-3 border rounded-lg bg-gray-50 hover:bg-gray-100 text-left"
+                    className="flex-1 px-3 py-2.5 rounded-lg border border-slate-700/80 bg-slate-900/80 hover:bg-slate-800/80 text-left text-sm text-slate-100"
                   >
                     {sub}
                   </button>
                   <button
                     onClick={() => onSelect(sub, "topten")}
-                    className="px-4 py-3 border rounded-lg bg-blue-50 hover:bg-blue-100 text-blue-700 font-semibold"
+                    className="px-3 py-2.5 rounded-lg border border-amber-400/60 bg-amber-500/10 hover:bg-amber-500/20 text-amber-200 text-sm font-semibold"
                     title="Top 10 Lists"
                   >
                     🔟
@@ -58,10 +64,10 @@ export default function SubcategoryModal({
         </div>
 
         <button
-          className="mt-5 w-full bg-red-500 text-white py-2 rounded-lg hover:bg-red-600"
+          className="mt-4 w-full rounded-lg border border-slate-700/80 bg-slate-900/80 py-2.5 text-sm font-medium text-slate-200 hover:bg-slate-800"
           onClick={onClose}
         >
-          Close
+          Back to cabin
         </button>
       </div>
     </div>

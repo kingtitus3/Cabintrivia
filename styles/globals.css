@@ -2,3 +2,40 @@
 @tailwind components;
 @tailwind utilities;
 
+@import url("https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&display=swap");
+
+@layer base {
+  html,
+  body,
+  #__next {
+    @apply h-full;
+  }
+
+  body {
+    @apply m-0 bg-slate-950 text-slate-100 font-sans antialiased;
+    background:
+      radial-gradient(circle at 0% 0%, rgba(248, 250, 252, 0.04) 0, transparent 45%),
+      radial-gradient(circle at 100% 0%, rgba(251, 191, 36, 0.08) 0, transparent 50%),
+      linear-gradient(to bottom, #020617 0%, #020617 40%, #020617 100%);
+  }
+
+  ::selection {
+    background-color: rgba(248, 189, 84, 0.4);
+    color: #f9fafb;
+  }
+}
+
+@layer components {
+  .cabin-panel {
+    @apply rounded-3xl bg-slate-900/80 border border-slate-800/80 shadow-cabin backdrop-blur-sm;
+  }
+
+  .cabin-chip {
+    @apply inline-flex items-center gap-1 rounded-full border border-amber-400/40 bg-amber-500/10 px-3 py-1 text-xs font-medium uppercase tracking-[0.15em] text-amber-200;
+  }
+
+  .cabin-tag {
+    @apply inline-flex items-center gap-1 rounded-full bg-slate-800/80 px-2.5 py-0.5 text-[11px] font-medium text-slate-300;
+  }
+}
+
