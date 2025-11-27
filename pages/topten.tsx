@@ -6,6 +6,32 @@ import type { GameMode } from "../types/gameMode";
 import type { TopTenRound } from "../types/topTenRound";
 import { useVoiceRecognition } from "../hooks/useVoiceRecognition";
 
+// Helper to strip obvious repetition/noise from the running transcript
+const condenseTranscript = (input: string): string => {
+  if (!input) return "";
+  const words = input.split(/\s+/).filter(Boolean);
+  if (words.length <= 1) return input.trim();
+
+  const condensed: string[] = [];
+  for (const word of words) {
+    const last = condensed[condensed.length - 1];
+    if (!last || last.toLowerCase() !== word.toLowerCase()) {
+      condensed.push(word);
+    }
+  }
+  return condensed.join(" ");
+};
+
+// Normalization helpers for matching
+const normalizeForMatch = (input: string): string =>
+  input
+    .toLowerCase()
+    .replace(/[^a-z0-9\s]/g, " ")
+    .replace(/\s+/g, " ")
+    .trim();
+
+const STOP_WORDS = new Set(["the", "and", "of", "in", "on", "at", "for", "to", "a", "an"]);
+
 export default function TopTenPage() {
   const router = useRouter();
   const { mode, category, subcategory } = router.query;
@@ -20,114 +46,84 @@ export default function TopTenPage() {
   const gameMode = (mode as GameMode) || "party";
   const modeDisplay = gameMode === "party" ? "🎉 Party Mode" : "🏆 Competitive Mode";
 
-  // Function to match spoken answer with list items (ultra-lenient matching)
-  const matchVoiceAnswer = useCallback(
-    (transcript: string, listItems: string[]): string | null => {
-      const normalizedTranscript = transcript.toLowerCase().trim();
-      
-      // Remove common filler words and punctuation
-      const cleanTranscript = normalizedTranscript
-        .replace(/^(the|a|an|its|it's|i|is|are|was|were)\s+/i, "")
-        .replace(/[.,!?;:]/g, "")
-        .trim();
+  // Find all clearly matching items in the transcript (prioritizing clear word hits)
+  const matchVoiceAnswers = useCallback(
+    (transcript: string, listItems: string[], alreadyFound: Set<string>): string[] => {
+      const cleanTranscript = normalizeForMatch(transcript);
       
       if (cleanTranscript.length < 1) {
-        console.log(`❌ Transcript too short: "${transcript}"`);
-        return null;
-      }
-      
-      console.log("🔍 Matching transcript:", cleanTranscript, "against", listItems);
-      
-      // Try exact match first
-      for (const item of listItems) {
-        const normalizedItem = item.toLowerCase().trim();
-        if (normalizedItem === normalizedTranscript || normalizedItem === cleanTranscript) {
-          console.log(`✅ Exact match: "${transcript}" → "${item}"`);
-          return item;
+        if (process.env.NODE_ENV === "development") {
+          console.log(`❌ Transcript too short: "${transcript}"`);
         }
+        return [];
       }
 
-      // Try ANY substring match - if transcript appears anywhere in item or vice versa
-      for (const item of listItems) {
-        const normalizedItem = item.toLowerCase().trim();
-        const cleanItem = normalizedItem.replace(/^(the|a|an)\s+/i, "").trim();
-        
-        if (
-          cleanItem.includes(cleanTranscript) ||
-          cleanTranscript.includes(cleanItem) ||
-          normalizedItem.includes(normalizedTranscript) ||
-          normalizedTranscript.includes(normalizedItem)
-        ) {
-          console.log(`✅ Substring match: "${transcript}" → "${item}"`);
-          return item;
+      const phraseWords = cleanTranscript
+        .split(/\s+/)
+        .filter((w) => w.length >= 3 && !STOP_WORDS.has(w));
+
+      if (!phraseWords.length) {
+        if (process.env.NODE_ENV === "development") {
+          console.log(`⚠️ No strong words in phrase: "${cleanTranscript}"`);
         }
+        return [];
       }
 
-      // Try word-by-word matching - ANY word match triggers
-      const transcriptWords = cleanTranscript.split(/\s+/).filter(w => w.length >= 1);
-      
+      if (process.env.NODE_ENV === "development") {
+        console.log("🔍 Matching words:", phraseWords, "against", listItems);
+      }
+      const matches: string[] = [];
+
+      const tryAddMatch = (item: string, reason: string) => {
+        if (alreadyFound.has(item)) return;
+        if (matches.includes(item)) return;
+        if (process.env.NODE_ENV === "development") {
+          console.log(`✅ ${reason}: "${transcript}" → "${item}"`);
+        }
+        matches.push(item);
+      };
+
       for (const item of listItems) {
-        const normalizedItem = item.toLowerCase().trim();
-        const itemWords = normalizedItem.split(/\s+/).filter(w => w.length >= 1);
-        
-        for (const tWord of transcriptWords) {
-          for (const iWord of itemWords) {
-            const firstTwoMatch = tWord.length >= 1 && iWord.length >= 1 && 
-              iWord.substring(0, Math.min(2, iWord.length)) === tWord.substring(0, Math.min(2, tWord.length));
-            const firstThreeMatch = tWord.length >= 1 && iWord.length >= 1 && 
-              iWord.substring(0, Math.min(3, iWord.length)) === tWord.substring(0, Math.min(3, tWord.length));
-            const endsWithMatch1 = iWord.length >= 3 && tWord.length >= 3 && 
-              iWord.endsWith(tWord.substring(Math.max(0, tWord.length - 3)));
-            const endsWithMatch2 = tWord.length >= 3 && iWord.length >= 3 && 
-              tWord.endsWith(iWord.substring(Math.max(0, iWord.length - 3)));
-            
-            if (
-              iWord === tWord ||
-              iWord.includes(tWord) ||
-              tWord.includes(iWord) ||
-              iWord.startsWith(tWord) ||
-              tWord.startsWith(iWord) ||
-              firstTwoMatch ||
-              firstThreeMatch ||
-              endsWithMatch1 ||
-              endsWithMatch2
-            ) {
-              console.log(`✅ Word match: "${transcript}" → "${item}" (word: "${tWord}" vs "${iWord}")`);
-              return item;
-            }
+        if (alreadyFound.has(item)) continue;
+
+        const normalizedItem = normalizeForMatch(item);
+        const itemWords = normalizedItem
+          .split(/\s+/)
+          .filter((w) => w.length >= 3 && !STOP_WORDS.has(w));
+
+        if (!itemWords.length) continue;
+
+        // If this is a simple one-word item (e.g. "Snickers", "Twix"), then
+        // a single exact word hit is enough to count it as found.
+        if (itemWords.length === 1 && phraseWords.includes(itemWords[0])) {
+          tryAddMatch(item, "Single-word exact hit");
+          continue;
+        }
+
+        // For multi-word items, count overlaps and require at least ~half the key words
+        let overlap = 0;
+        for (const iWord of itemWords) {
+          if (phraseWords.includes(iWord)) {
+            overlap++;
           }
         }
-      }
 
-      // Try character-level matching - if first few characters match
-      if (cleanTranscript.length >= 1) {
-        for (const item of listItems) {
-          const normalizedItem = item.toLowerCase().trim();
-          const cleanItem = normalizedItem.replace(/^(the|a|an)\s+/i, "").trim();
-          
-          // Check if first 2-3 characters match
-          const transcriptStart = cleanTranscript.substring(0, Math.min(3, cleanTranscript.length));
-          const itemStart = cleanItem.substring(0, Math.min(3, cleanItem.length));
-          
-          if (transcriptStart === itemStart && transcriptStart.length >= 2) {
-            console.log(`✅ Char start match: "${transcript}" → "${item}"`);
-            return item;
-          }
-          
-          // Check if transcript ends match
-          if (cleanTranscript.length >= 3 && cleanItem.length >= 3) {
-            const transcriptEnd = cleanTranscript.substring(Math.max(0, cleanTranscript.length - 3));
-            const itemEnd = cleanItem.substring(Math.max(0, cleanItem.length - 3));
-            if (transcriptEnd === itemEnd) {
-              console.log(`✅ Char end match: "${transcript}" → "${item}"`);
-              return item;
-            }
-          }
+        if (overlap === 0) continue;
+
+        const coverage = overlap / itemWords.length;
+        if (coverage >= 0.5) {
+          tryAddMatch(item, `Multi-word coverage ${overlap}/${itemWords.length} (${coverage.toFixed(2)})`);
         }
       }
 
-      console.log(`❌ No match for "${transcript}". Available: ${listItems.join(", ")}`);
-      return null;
+      if (!matches.length) {
+        console.log(`❌ No match for "${transcript}". Available: ${listItems.join(", ")}`);
+      } else {
+        console.log(`📦 Matches this phrase: ${matches.join(", ")}`);
+      }
+
+      // Safety: avoid lighting up everything from one noisy phrase; cap to 4 per shout.
+      return matches.slice(0, 4);
     },
     []
   );
@@ -141,49 +137,61 @@ export default function TopTenPage() {
       }
 
       console.log("🎤 Voice result received:", transcript);
-      setVoiceTranscript(transcript);
-      setFullTranscript((prev) => (prev ? `${prev} ${transcript}` : transcript));
-      
-      const matchedItem = matchVoiceAnswer(transcript, round.listItems);
+      const cleanedPhrase = condenseTranscript(transcript);
 
-      if (matchedItem) {
-        console.log(`✅ Match found: "${transcript}" → "${matchedItem}"`);
-        
-        // Add to found items using functional update to avoid dependency
-        setFoundItems((prev) => {
-          if (prev.has(matchedItem)) {
-            console.log(`⚠️ Item "${matchedItem}" already found, skipping`);
-            return prev; // Already found, don't update
-          }
-          
-          const newSet = new Set([...prev, matchedItem]);
-          console.log(`📊 Progress: ${newSet.size} / ${round.listItems.length} found`);
-          
-          // Update database when all items are found
-          if (round.id && newSet.size === round.listItems.length) {
-            console.log("🏆 All items found! Updating database...");
-            fetch("/api/question-result", {
-              method: "POST",
-              headers: { "Content-Type": "application/json" },
-              body: JSON.stringify({
-                questionId: round.id,
-                answeredCorrectly: true,
-              }),
-            }).catch((err) => console.error("Error saving question result:", err));
-          }
-          
-          return newSet;
-        });
-
-        // Reset transcripts after a successful match so the next answer starts clean
-        setVoiceTranscript("");
-        setFullTranscript("");
-      } else {
-        console.log(`❌ No match for: "${transcript}"`);
-        console.log("📋 Available items:", round.listItems);
+      // Ignore extremely short/noisy phrases
+      if (cleanedPhrase.replace(/[^a-z0-9]/gi, "").length < 2) {
+        console.log(`⚠️ Ignoring very short/noisy phrase: "${cleanedPhrase}"`);
+        return;
       }
+
+      setVoiceTranscript(cleanedPhrase);
+      const combinedTranscript = fullTranscript
+        ? condenseTranscript(`${fullTranscript} ${cleanedPhrase}`)
+        : cleanedPhrase;
+      setFullTranscript((prev) =>
+        prev ? condenseTranscript(`${prev} ${cleanedPhrase}`) : cleanedPhrase
+      );
+      
+      // Find all clear matches in just this phrase, ignoring already-found items
+      setFoundItems((prev) => {
+        const matches = matchVoiceAnswers(cleanedPhrase, round.listItems, prev);
+
+        if (!matches.length) {
+          console.log(`❌ No new matches for: "${transcript}"`);
+          console.log("📋 Available items:", round.listItems);
+          return prev;
+        }
+
+        const newSet = new Set(prev);
+        for (const item of matches) {
+          if (!newSet.has(item)) {
+            newSet.add(item);
+          }
+        }
+
+        console.log(`📊 Progress: ${newSet.size} / ${round.listItems.length} found`);
+
+        // Update database when all items are found
+        if (round.id && newSet.size === round.listItems.length) {
+          console.log("🏆 All items found! Updating database...");
+          fetch("/api/question-result", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({
+              questionId: round.id,
+              answeredCorrectly: true,
+            }),
+          }).catch((err) => console.error("Error saving question result:", err));
+        }
+
+        return newSet;
+      });
+
+      // Clear only the last-phrase view; keep full transcript visible for the round
+      setVoiceTranscript("");
     },
-    [round, matchVoiceAnswer]
+    [round, matchVoiceAnswers, fullTranscript]
   );
 
   const { isListening, isSupported, startListening, stopListening } =
@@ -229,11 +237,13 @@ export default function TopTenPage() {
         if (!isMounted) return;
         setLoading(true);
         setError(null);
-        // Don't stop listening here - it will restart automatically when new round loads
         setFoundItems(new Set());
+        setVoiceTranscript("");
         setFullTranscript(""); // Clear transcript for new round
         
-        console.log("Fetching top ten list with:", { category, subcategory });
+        if (process.env.NODE_ENV === "development") {
+          console.log("Fetching top ten list with:", { category, subcategory });
+        }
         
         const response = await fetch("/api/topten", {
           method: "POST",
@@ -246,8 +256,6 @@ export default function TopTenPage() {
           }),
         });
 
-        console.log("Response status:", response.status);
-
         if (!response.ok) {
           const errorData = await response.json().catch(() => ({ error: "Unknown error" }));
           console.error("API error:", errorData);
@@ -255,7 +263,6 @@ export default function TopTenPage() {
         }
 
         const roundData = await response.json();
-        console.log("Top ten list data received:", roundData);
         if (isMounted) {
           setRound(roundData);
         }
@@ -306,18 +313,18 @@ export default function TopTenPage() {
         setError(err.message);
         setLoading(false);
       });
-  }, [category, subcategory]);
+  }, [category, subcategory, stopListening]);
 
   if (loading) {
     return (
-      <div className="min-h-screen bg-gray-100 flex items-center justify-center">
-        <div className="text-center">
+      <div className="min-h-[calc(100vh-6rem)] flex items-center justify-center px-4">
+        <div className="cabin-panel px-8 py-8 text-center max-w-md w-full">
           <div className="text-4xl mb-4">🔟</div>
-          <p className="text-xl text-gray-700">Loading top 10 list...</p>
-          <p className="text-sm text-gray-500 mt-4">
+          <p className="text-xl font-semibold text-slate-100">Loading top 10 list...</p>
+          <p className="text-sm text-slate-400 mt-4">
             Category: {category || "..."} | Subcategory: {subcategory || "..."}
           </p>
-          <p className="text-xs text-gray-400 mt-2">Check browser console (F12) for details</p>
+          <p className="text-xs text-slate-500 mt-2">Check browser console (F12) for details</p>
         </div>
       </div>
     );
@@ -325,14 +332,11 @@ export default function TopTenPage() {
 
   if (error) {
     return (
-      <div className="min-h-screen bg-gray-100 flex items-center justify-center p-6">
-        <div className="text-center max-w-md">
+      <div className="min-h-[calc(100vh-6rem)] flex items-center justify-center px-4">
+        <div className="cabin-panel px-8 py-8 text-center max-w-md w-full">
           <div className="text-4xl mb-4">❌</div>
-          <p className="text-xl text-red-600 mb-4 font-bold">Error Loading List</p>
-          <p className="text-sm text-red-500 mb-4 bg-red-50 p-3 rounded">{error}</p>
-          <p className="text-xs text-gray-500 mb-4">
-            Category: {category || "N/A"} | Subcategory: {subcategory || "N/A"}
-          </p>
+          <p className="text-xl font-semibold text-red-300 mb-2">Something went wrong</p>
+          <p className="text-sm text-red-200 mb-4">{error}</p>
           <div className="flex gap-2 justify-center">
             <button
               onClick={() => {
@@ -362,13 +366,13 @@ export default function TopTenPage() {
                     setLoading(false);
                   });
               }}
-              className="bg-blue-500 text-white px-4 py-2 rounded-lg hover:bg-blue-600"
+              className="inline-flex items-center justify-center rounded-lg bg-amber-500 px-5 py-2 text-sm font-semibold text-slate-900 hover:bg-amber-400"
             >
               Retry
             </button>
             <button
               onClick={() => router.push("/categories")}
-              className="bg-gray-500 text-white px-4 py-2 rounded-lg hover:bg-gray-600"
+              className="inline-flex items-center justify-center rounded-lg bg-slate-800/90 px-5 py-2 text-sm font-semibold text-slate-200 hover:bg-slate-700"
             >
               Back to Categories
             </button>
@@ -386,80 +390,124 @@ export default function TopTenPage() {
   const allFound = progress === 10;
 
   return (
-    <div className="min-h-screen bg-gray-100 p-6">
-      <div className="max-w-4xl mx-auto">
-        {/* Header */}
-        <div className="mb-6 text-center">
-          <h1 className="text-3xl font-bold mb-2">Top 10 Lists</h1>
-          <p className="text-gray-600">{modeDisplay}</p>
-          <div className="mt-4 text-2xl font-bold text-blue-600">
-            {progress} / 10 Found
+    <div className="min-h-[calc(100vh-6rem)] py-4">
+      <div className="cabin-panel px-5 py-6 md:px-8 md:py-8 max-w-3xl mx-auto">
+        {/* Header / Controls */}
+        <div className="mb-6">
+          <div className="flex items-start justify-between gap-3 mb-3">
+            <button
+              onClick={() => router.push("/mode")}
+              className="inline-flex items-center gap-2 rounded-lg bg-slate-800/90 px-3 py-1.5 text-xs font-medium text-slate-200 hover:bg-slate-700"
+            >
+              <span className="text-sm">←</span>
+              <span>Back to start</span>
+            </button>
+
+            <div className="text-right">
+              <div className="cabin-chip mb-1 inline-flex">
+                <span className="mr-1">🔥</span>
+                {modeDisplay}
+              </div>
+              <div className="flex flex-wrap justify-end gap-1 text-[11px] text-slate-400">
+                {category && (
+                  <span className="cabin-tag">
+                    <span className="text-emerald-300">Category</span>· {category}
+                  </span>
+                )}
+                {subcategory && (
+                  <span className="cabin-tag">
+                    <span className="text-sky-300">Pack</span>· {subcategory}
+                  </span>
+                )}
+              </div>
+            </div>
+          </div>
+
+          {/* Progress */}
+          <div className="text-center mb-4">
+            <div className="text-2xl font-bold text-amber-300">
+              {progress} / 10 Found
+            </div>
           </div>
         </div>
 
         {/* Voice Status */}
         {isSupported && (
-          <div className="bg-white rounded-xl shadow-lg p-4 mb-4">
-            <div className="flex items-center justify-between">
+          <div className="mb-4 rounded-2xl border border-slate-800/80 bg-slate-900/80 px-4 py-3">
+            <div className="flex items-center justify-between gap-3">
               <div className="flex items-center gap-3">
-                {isListening ? (
+                {isListening && foundItems.size < 10 ? (
                   <>
-                    <span className="text-2xl animate-pulse">🔴</span>
-                    <span className="text-lg font-semibold text-gray-700">
-                      Listening for answers... ({foundItems.size} found)
-                    </span>
+                    <span className="text-xl animate-pulse">🔴</span>
+                    <div className="text-sm">
+                      <p className="font-semibold text-slate-100">
+                        Listening for your next shout… ({foundItems.size} found)
+                      </p>
+                      {voiceTranscript && (
+                        <p className="mt-1 text-xs text-slate-400 italic">
+                          Heard: &quot;{voiceTranscript}&quot;
+                        </p>
+                      )}
+                    </div>
+                  </>
+                ) : allFound ? (
+                  <>
+                    <span className="text-xl">🎉</span>
+                    <p className="text-sm font-semibold text-slate-300">
+                      All items found — get ready for the next list!
+                    </p>
                   </>
                 ) : (
                   <>
-                    <span className="text-2xl">🎤</span>
-                    <span className="text-lg font-semibold text-gray-600">
-                      Voice recognition stopped. Click Start to resume.
-                    </span>
+                    <span className="text-xl">🎤</span>
+                    <p className="text-sm font-semibold text-slate-300">
+                      Tap restart if the cabin gets too loud.
+                    </p>
                   </>
                 )}
               </div>
-              <button
-                onClick={isListening ? stopListening : startListening}
-                className="px-4 py-2 text-sm bg-blue-500 text-white rounded-lg hover:bg-blue-600"
-              >
-                {isListening ? "Stop" : "Start Listening"}
-              </button>
+              {!allFound && (
+                <button
+                  onClick={isListening ? stopListening : startListening}
+                  className="text-xs font-semibold text-amber-300 hover:text-amber-200 underline"
+                >
+                  {isListening ? "Pause listening" : "Restart listening"}
+                </button>
+              )}
             </div>
-            {voiceTranscript && (
-              <div className="mt-2 text-sm text-gray-600 italic">
-                Heard: &quot;{voiceTranscript}&quot;
-              </div>
-            )}
             {fullTranscript && (
-              <div className="mt-2 p-2 bg-gray-50 rounded text-xs text-gray-500 max-h-20 overflow-y-auto">
-                <div className="font-semibold mb-1">Full Transcript:</div>
-                <div>{fullTranscript}</div>
-              </div>
-            )}
-            {!isListening && foundItems.size < 10 && (
-              <div className="mt-2 text-xs text-yellow-600">
-                ⚠️ Voice recognition stopped. Click &quot;Start Listening&quot; to continue.
+              <div className="mt-2 max-h-16 overflow-y-auto rounded-md bg-slate-950/70 px-3 py-2 text-[11px] text-slate-400">
+                <div className="mb-1 font-semibold text-slate-300 text-[11px]">
+                  Cabin transcript
+                </div>
+                <p>{fullTranscript}</p>
               </div>
             )}
           </div>
         )}
         {!isSupported && (
-          <div className="bg-yellow-50 border border-yellow-200 rounded-lg p-3 mb-4 text-center text-sm text-yellow-800">
-            Voice recognition not supported in this browser. Please use Chrome or Edge.
+          <div className="mb-4 rounded-2xl border border-amber-500/30 bg-amber-500/10 px-4 py-3 text-center text-xs text-amber-100">
+            Voice recognition isn't available in this browser. Try Chrome or Edge for the full
+            Cabin Trivia experience.
           </div>
         )}
 
         {/* Question */}
-        <div className="bg-white rounded-xl shadow-lg p-8 mb-6">
-          <div className="flex items-center justify-between mb-6">
-            <h2 className="text-2xl font-semibold text-center flex-1">{round.question}</h2>
-            <button
-              onClick={() => setShowAllAnswers(!showAllAnswers)}
-              className="ml-4 px-4 py-2 text-sm bg-gray-200 hover:bg-gray-300 rounded-lg transition whitespace-nowrap"
-              title={showAllAnswers ? "Hide answers" : "Show all answers"}
-            >
-              {showAllAnswers ? "🙈 Hide" : "👁️ Show All"}
-            </button>
+        <div className="rounded-2xl border border-slate-800/80 bg-slate-900/80 px-5 py-6 mb-5">
+          <div className="mb-4 flex items-start justify-between gap-3">
+            <h2 className="text-xl md:text-2xl font-semibold tracking-tight flex-1 text-slate-50 drop-shadow-[0_1px_2px_rgba(0,0,0,0.8)]">
+              {round.question}
+            </h2>
+            {!allFound && (
+              <button
+                onClick={() => setShowAllAnswers(!showAllAnswers)}
+                className="inline-flex items-center gap-1 rounded-full bg-slate-800/90 px-3 py-1 text-xs font-medium text-slate-200 hover:bg-slate-700"
+                title={showAllAnswers ? "Hide answers" : "Show all answers"}
+              >
+                <span>{showAllAnswers ? "🙈" : "👁️"}</span>
+                <span>{showAllAnswers ? "Hide options" : "Show options"}</span>
+              </button>
+            )}
           </div>
 
           {/* Top 10 List */}
@@ -470,20 +518,20 @@ export default function TopTenPage() {
               return (
                 <div
                   key={index}
-                  className={`p-4 border-2 rounded-lg transition-all ${
+                  className={`p-3.5 md:p-4 rounded-xl border-2 transition-all ${
                     isFound
-                      ? "bg-green-100 border-green-500 text-green-800 font-semibold"
+                      ? "bg-emerald-500/15 border-emerald-400 text-emerald-100 shadow-md shadow-emerald-500/20"
                       : showAllAnswers
-                      ? "bg-yellow-50 border-yellow-400 text-yellow-800"
-                      : "bg-gray-50 border-gray-300 text-gray-500"
+                      ? "bg-amber-500/10 border-amber-400/60 text-amber-200"
+                      : "bg-slate-900/80 border-slate-700/80 text-slate-400"
                   }`}
                 >
-                  <div className="flex items-center justify-between">
-                    <span className="text-lg font-bold mr-3">#{index + 1}</span>
-                    <span className="flex-1">{shouldShow ? item : "???"}</span>
-                    {isFound && <span className="text-2xl ml-2">✓</span>}
+                  <div className="flex items-center justify-between gap-2">
+                    <span className="text-base md:text-lg font-bold mr-2">#{index + 1}</span>
+                    <span className="flex-1 text-sm md:text-base">{shouldShow ? item : "???"}</span>
+                    {isFound && <span className="text-xl ml-2">✓</span>}
                     {showAllAnswers && !isFound && (
-                      <span className="text-sm ml-2 text-yellow-600">(not found)</span>
+                      <span className="text-xs ml-2 text-amber-400">(not found)</span>
                     )}
                   </div>
                 </div>
@@ -494,21 +542,24 @@ export default function TopTenPage() {
 
         {/* Completion Message */}
         {allFound && (
-          <div className="bg-green-100 border-2 border-green-500 rounded-xl p-6 mb-4 text-center">
+          <div className="rounded-2xl border border-emerald-500/60 bg-emerald-500/15 px-6 py-6 mb-4 text-center shadow-md shadow-emerald-500/20">
             <div className="text-4xl mb-2">🎉</div>
-            <p className="text-2xl font-bold text-green-800">All 10 items found!</p>
+            <p className="text-2xl font-bold text-emerald-100">All 10 items found!</p>
           </div>
         )}
 
         {/* Next Round Button */}
-        <div className="text-center">
-          <button
-            onClick={handleNextRound}
-            className="bg-blue-500 text-white px-8 py-3 rounded-lg hover:bg-blue-600 text-lg font-semibold"
-          >
-            New List
-          </button>
-        </div>
+        {allFound && (
+          <div className="text-center">
+            <button
+              onClick={handleNextRound}
+              className="inline-flex items-center gap-2 rounded-full bg-amber-500 px-8 py-3 text-sm md:text-base font-semibold text-slate-900 hover:bg-amber-400"
+            >
+              <span>New List</span>
+              <span>→</span>
+            </button>
+          </div>
+        )}
       </div>
     </div>
   );

@@ -6,6 +6,7 @@ import {
   getRecentQuestions,
   getSuccessfulTopics,
   saveQuestion,
+  isQuestionRecent,
 } from "../../utils/questionDatabase";
 
 export default async function handler(
@@ -40,17 +41,24 @@ export default async function handler(
     
     // Get successful topics from previous correct answers
     const successfulTopics = getSuccessfulTopics(category, subcategory);
-    const topicsContext = successfulTopics.length > 0
-      ? `\n\nPrevious successful topics that players enjoyed (you can create similar lists): ${successfulTopics.slice(-5).join(", ")}`
-      : "";
+    const topicsContext =
+      successfulTopics.length > 0
+        ? `\n\nPrevious successful topics that players enjoyed (you can create similar lists): ${successfulTopics
+            .slice(-5)
+            .join(", ")}`
+        : "";
 
-    // Check for recent questions to avoid duplicates
+    // Check for recent questions to avoid duplicates (last 30 minutes)
     const recentQuestions = getRecentQuestions(category, subcategory, "topten");
-    const avoidContext = recentQuestions.length > 0
-      ? `\n\nAvoid these recently asked questions: ${recentQuestions.slice(-3).map(q => q.question).join("; ")}`
-      : "";
+    const avoidContext =
+      recentQuestions.length > 0
+        ? `\n\nAvoid these recently asked questions from the last 30 minutes (do NOT repeat them):\n${recentQuestions
+            .slice(-5)
+            .map((q) => `- ${q.question}`)
+            .join("\n")}\n`
+        : "";
     
-    const prompt = `You are writing *party-friendly* Top 10 lists for a live voice trivia game called Cabin Trivia.
+    const basePrompt = `You are writing *party-friendly* Top 10 lists for a live voice trivia game called Cabin Trivia.
 
 Generate a "Top 10" list question for ${categoryContext} and ${subcategoryContext}.${topicsContext}${avoidContext}
 
@@ -76,99 +84,133 @@ Return your response in this exact JSON format:
 }
 
 Only return the JSON, no additional text.`;
+    // Try multiple times to get a non-recent list
+    for (let attempt = 0; attempt < 3; attempt++) {
+      const response = await fetch("https://openrouter.ai/api/v1/chat/completions", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${apiKey}`,
+          "HTTP-Referer": process.env.NEXT_PUBLIC_APP_URL || "http://localhost:3000",
+          "X-Title": "Cabin Trivia",
+        },
+        body: JSON.stringify({
+          model: "google/gemini-2.5-flash",
+          messages: [
+            {
+              role: "user",
+              content: basePrompt,
+            },
+          ],
+          temperature: 0.8,
+          max_tokens: 800,
+        }),
+      });
 
-    const response = await fetch("https://openrouter.ai/api/v1/chat/completions", {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-        Authorization: `Bearer ${apiKey}`,
-        "HTTP-Referer": process.env.NEXT_PUBLIC_APP_URL || "http://localhost:3000",
-        "X-Title": "Cabin Trivia",
-      },
-      body: JSON.stringify({
-        model: "google/gemini-2.5-flash",
-        messages: [
-          {
-            role: "user",
-            content: prompt,
-          },
-        ],
-        temperature: 0.8,
-        max_tokens: 800,
-      }),
-    });
+      if (!response.ok) {
+        const errorData = await response.text();
+        console.error("OpenRouter API error:", errorData);
+        return res.status(500).json({ error: "Failed to generate top ten list" });
+      }
 
-    if (!response.ok) {
-      const errorData = await response.text();
-      console.error("OpenRouter API error:", errorData);
-      return res.status(500).json({ error: "Failed to generate top ten list" });
+      const data = await response.json();
+      
+      // Handle different response formats from OpenRouter/Gemini
+      let content: string;
+      if (data.choices && data.choices[0]?.message?.content) {
+        content = data.choices[0].message.content.trim();
+      } else if (data.content) {
+        content = data.content.trim();
+      } else if (data.candidates && data.candidates[0]?.content?.parts) {
+        // Gemini format
+        content = data.candidates[0].content.parts[0]?.text?.trim() || "";
+      } else {
+        console.error("Unexpected API response format:", JSON.stringify(data, null, 2));
+        if (attempt === 2) {
+          return res.status(500).json({ error: "Unexpected API response format" });
+        }
+        continue;
+      }
+
+      if (!content) {
+        console.error("No content in API response:", JSON.stringify(data, null, 2));
+        if (attempt === 2) {
+          return res.status(500).json({ error: "No content generated" });
+        }
+        continue;
+      }
+
+      // Parse the JSON response
+      let roundData: TopTenRound;
+      try {
+        // Remove any markdown code blocks if present
+        const cleanedContent = content.replace(/```json\n?/g, "").replace(/```\n?/g, "").trim();
+        roundData = JSON.parse(cleanedContent);
+      } catch (parseError) {
+        console.error("Failed to parse AI response. Content:", content);
+        console.error("Parse error:", parseError);
+        if (attempt === 2) {
+          return res.status(500).json({
+            error: `Failed to parse generated list: ${
+              parseError instanceof Error ? parseError.message : "Unknown error"
+            }`,
+          });
+        }
+        continue;
+      }
+
+      // Validate the response structure
+      if (!roundData.question || !roundData.listItems) {
+        if (attempt === 2) {
+          return res.status(500).json({ error: "Invalid list structure generated" });
+        }
+        continue;
+      }
+
+      // Ensure we have exactly 10 items
+      if (roundData.listItems.length !== 10) {
+        if (attempt === 2) {
+          return res.status(500).json({ error: "List must have exactly 10 items" });
+        }
+        continue;
+      }
+
+      // Hard check against recent questions (30 minutes)
+      if (isQuestionRecent(roundData.question, category, subcategory, "topten")) {
+        console.warn("LLM repeated a recent Top 10 question, retrying...");
+        if (attempt === 2) {
+          return res
+            .status(500)
+            .json({ error: "Could not generate a fresh Top 10 list, please try again." });
+        }
+        continue;
+      }
+
+      // Save question to database
+      const questionId = `q_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`;
+      saveQuestion({
+        id: questionId,
+        question: roundData.question,
+        listItems: roundData.listItems,
+        category,
+        subcategory,
+        gameType: "topten",
+        answeredCorrectly: false, // Will be updated as items are found
+        timestamp: Date.now(),
+      });
+
+      // Add category and subcategory to the round
+      const round: TopTenRound = {
+        ...roundData,
+        id: questionId,
+        category,
+        subcategory,
+      };
+
+      return res.status(200).json(round);
     }
 
-    const data = await response.json();
-    
-    // Handle different response formats from OpenRouter/Gemini
-    let content: string;
-    if (data.choices && data.choices[0]?.message?.content) {
-      content = data.choices[0].message.content.trim();
-    } else if (data.content) {
-      content = data.content.trim();
-    } else if (data.candidates && data.candidates[0]?.content?.parts) {
-      // Gemini format
-      content = data.candidates[0].content.parts[0]?.text?.trim() || "";
-    } else {
-      console.error("Unexpected API response format:", JSON.stringify(data, null, 2));
-      return res.status(500).json({ error: "Unexpected API response format" });
-    }
-
-    if (!content) {
-      console.error("No content in API response:", JSON.stringify(data, null, 2));
-      return res.status(500).json({ error: "No content generated" });
-    }
-
-    // Parse the JSON response
-    let roundData: TopTenRound;
-    try {
-      // Remove any markdown code blocks if present
-      const cleanedContent = content.replace(/```json\n?/g, "").replace(/```\n?/g, "").trim();
-      roundData = JSON.parse(cleanedContent);
-    } catch (parseError) {
-      console.error("Failed to parse AI response. Content:", content);
-      console.error("Parse error:", parseError);
-      return res.status(500).json({ error: `Failed to parse generated list: ${parseError instanceof Error ? parseError.message : 'Unknown error'}` });
-    }
-
-    // Validate the response structure
-    if (!roundData.question || !roundData.listItems) {
-      return res.status(500).json({ error: "Invalid list structure generated" });
-    }
-
-    // Ensure we have exactly 10 items
-    if (roundData.listItems.length !== 10) {
-      return res.status(500).json({ error: "List must have exactly 10 items" });
-    }
-
-    // Save question to database
-    const questionId = `q_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`;
-    saveQuestion({
-      id: questionId,
-      question: roundData.question,
-      listItems: roundData.listItems,
-      category,
-      subcategory,
-      gameType: "topten",
-      answeredCorrectly: false, // Will be updated as items are found
-      timestamp: Date.now(),
-    });
-
-    // Add category and subcategory to the round
-    const round: TopTenRound = {
-      ...roundData,
-      id: questionId,
-      category,
-      subcategory,
-    };
-
-    return res.status(200).json(round);
+    return res.status(500).json({ error: "Failed to generate top ten list" });
   } catch (error) {
     console.error("Error generating top ten list:", error);
     return res.status(500).json({ error: "Internal server error" });

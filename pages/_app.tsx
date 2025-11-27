@@ -1,9 +1,11 @@
 import type { AppProps } from "next/app";
 import React from "react";
+import { useRouter } from "next/router";
 import "../styles/globals.css";
 
 export default function App({ Component, pageProps }: AppProps) {
   const year = new Date().getFullYear();
+  const router = useRouter();
 
   return (
     <div className="min-h-screen bg-gradient-to-b from-slate-900 via-slate-950 to-black text-slate-100">
@@ -22,13 +24,22 @@ export default function App({ Component, pageProps }: AppProps) {
               </p>
             </div>
           </div>
-          <div className="hidden sm:flex items-center gap-3 text-xs text-slate-400">
-            <span className="cabin-tag">
-              <span className="text-emerald-400">●</span> Voice Play
-            </span>
-            <span className="cabin-tag">
-              <span className="text-amber-300">★</span> Party &amp; Competitive
-            </span>
+          <div className="flex items-center gap-3">
+            <div className="hidden sm:flex items-center gap-3 text-xs text-slate-400">
+              <span className="cabin-tag">
+                <span className="text-emerald-400">●</span> Voice Play
+              </span>
+              <span className="cabin-tag">
+                <span className="text-amber-300">★</span> Party &amp; Competitive
+              </span>
+            </div>
+            <button
+              onClick={() => router.push("/mode")}
+              className="inline-flex items-center gap-1 rounded-full bg-slate-800/90 px-3 py-1.5 text-[11px] font-medium text-slate-100 hover:bg-slate-700 border border-slate-700/80"
+            >
+              <span className="text-xs">⟵</span>
+              <span>Back to start</span>
+            </button>
           </div>
         </header>
 

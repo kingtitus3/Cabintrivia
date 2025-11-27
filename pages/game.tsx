@@ -9,6 +9,32 @@ import { usePlayers } from "../hooks/usePlayers";
 import { useVoiceProfiles } from "../hooks/useVoiceProfiles";
 import PlayerSetup from "../components/PlayerSetup";
 
+// Helper to strip obvious repetition/noise from the running transcript
+const condenseTranscript = (input: string): string => {
+  if (!input) return "";
+  const words = input.split(/\s+/).filter(Boolean);
+  if (words.length <= 1) return input.trim();
+
+  const condensed: string[] = [];
+  for (const word of words) {
+    const last = condensed[condensed.length - 1];
+    if (!last || last.toLowerCase() !== word.toLowerCase()) {
+      condensed.push(word);
+    }
+  }
+  return condensed.join(" ");
+};
+
+// Normalization helpers for matching
+const normalizeForMatch = (input: string): string =>
+  input
+    .toLowerCase()
+    .replace(/[^a-z0-9\s]/g, " ")
+    .replace(/\s+/g, " ")
+    .trim();
+
+const STOP_WORDS = new Set(["the", "and", "of", "in", "on", "at", "for", "to", "a", "an"]);
+
 export default function GamePage() {
   const router = useRouter();
   const { mode, category, subcategory } = router.query;
@@ -17,6 +43,7 @@ export default function GamePage() {
   const [error, setError] = useState<string | null>(null);
   const [selectedAnswer, setSelectedAnswer] = useState<string | null>(null);
   const [showResult, setShowResult] = useState(false);
+  const [wrongAnswers, setWrongAnswers] = useState<Set<string>>(new Set()); // Track wrong answers that have been selected
   const [voiceTranscript, setVoiceTranscript] = useState<string>("");
   const [fullTranscript, setFullTranscript] = useState<string>(""); // Running transcript of everything said
   const [showAnswers, setShowAnswers] = useState(true);
@@ -85,82 +112,67 @@ export default function GamePage() {
     [players]
   );
 
-  // Function to match spoken answer with displayed answers (ultra-lenient, per phrase only)
+  // Function to find the single best-matching answer for a spoken phrase
   const matchVoiceAnswer = useCallback(
     (transcript: string, answers: string[]): string | null => {
-      const normalizedTranscript = transcript.toLowerCase().trim();
-
-      // Remove common filler words and punctuation
-      const cleanTranscript = normalizedTranscript
-        .replace(/^(the|a|an|its|it's)\s+/i, "")
-        .replace(/[.,!?;:]/g, "")
-        .trim();
+      const cleanTranscript = normalizeForMatch(transcript);
 
       if (cleanTranscript.length < 2) return null;
 
-      // Try exact match first
+      const phraseWords = cleanTranscript
+        .split(/\s+/)
+        .filter((w) => w.length >= 3 && !STOP_WORDS.has(w));
+
+      if (!phraseWords.length) return null;
+
+      let bestAnswer: string | null = null;
+      let bestScore = 0;
+
       for (const answer of answers) {
-        const normalizedAnswer = answer.toLowerCase().trim();
-        if (normalizedAnswer === normalizedTranscript || normalizedAnswer === cleanTranscript) {
+        const normalizedAnswer = normalizeForMatch(answer);
+        const answerWords = normalizedAnswer
+          .split(/\s+/)
+          .filter((w) => w.length >= 3 && !STOP_WORDS.has(w));
+
+        if (!answerWords.length) continue;
+
+        // Exact phrase match
+        if (normalizedAnswer === cleanTranscript) {
           return answer;
         }
-      }
 
-      // Try ANY substring match - if transcript appears anywhere in item or vice versa
-      for (const answer of answers) {
-        const normalizedAnswer = answer.toLowerCase().trim();
-        const cleanAnswer = normalizedAnswer.replace(/^(the|a|an)\s+/i, "").trim();
-
-        if (
-          cleanAnswer.includes(cleanTranscript) ||
-          cleanTranscript.includes(cleanAnswer) ||
-          normalizedAnswer.includes(normalizedTranscript) ||
-          normalizedTranscript.includes(normalizedAnswer)
-        ) {
-          return answer;
-        }
-      }
-
-      // Try word-by-word matching - ANY word match triggers
-      const transcriptWords = cleanTranscript.split(/\s+/).filter((w) => w.length >= 2);
-
-      for (const answer of answers) {
-        const normalizedAnswer = answer.toLowerCase().trim();
-        const answerWords = normalizedAnswer.split(/\s+/).filter((w) => w.length >= 2);
-
-        for (const tWord of transcriptWords) {
-          for (const aWord of answerWords) {
-            if (
-              aWord === tWord ||
-              aWord.includes(tWord) ||
-              tWord.includes(aWord) ||
-              aWord.startsWith(tWord) ||
-              tWord.startsWith(aWord) ||
-              (tWord.length >= 2 &&
-                aWord.length >= 2 &&
-                (aWord.substring(0, 2) === tWord.substring(0, 2) ||
-                  aWord.substring(0, 3) === tWord.substring(0, 3)))
-            ) {
-              return answer;
+        let overlap = 0;
+        for (const aWord of answerWords) {
+          for (const pWord of phraseWords) {
+            if (aWord === pWord) {
+              overlap++;
+              break;
             }
           }
         }
-      }
 
-      // Try character-level matching - if first few characters match
-      if (cleanTranscript.length >= 2) {
-        for (const answer of answers) {
-          const normalizedAnswer = answer.toLowerCase().trim();
-          const transcriptStart = cleanTranscript.substring(0, Math.min(3, cleanTranscript.length));
-          const answerStart = normalizedAnswer.substring(0, Math.min(3, normalizedAnswer.length));
+        if (overlap === 0) continue;
 
-          if (transcriptStart === answerStart && transcriptStart.length >= 2) {
-            return answer;
-          }
+        const coverage = overlap / answerWords.length;
+        let score = 0;
+
+        if (answerWords.length === 1 && overlap === 1) {
+          score = 2; // strong single-word hit
+        } else if (coverage >= 0.5) {
+          score = 1 + coverage; // multi-word with decent coverage
+        }
+
+        if (score > bestScore) {
+          bestScore = score;
+          bestAnswer = answer;
         }
       }
 
-      return null;
+      if (!bestAnswer || bestScore <= 0) {
+        return null;
+      }
+
+      return bestAnswer;
     },
     []
   );
@@ -199,11 +211,20 @@ export default function GamePage() {
   // Handle voice recognition result with automatic speaker identification
   const handleVoiceResult = useCallback(
     async (transcript: string) => {
-      if (!round || showResult) return;
+      if (!round || showResult) return; // Only stop if correct answer was already selected
 
-      setVoiceTranscript(transcript);
-      // Keep fullTranscript only for display; matching is per-phrase now
-      setFullTranscript((prev) => (prev ? `${prev} ${transcript}` : transcript));
+      const cleanedPhrase = condenseTranscript(transcript);
+
+      // Ignore very short/noisy phrases
+      if (cleanedPhrase.replace(/[^a-z0-9]/gi, "").length < 2) {
+        return;
+      }
+
+      setVoiceTranscript(cleanedPhrase);
+      // Keep a cleaned-up full transcript for display only
+      setFullTranscript((prev) =>
+        prev ? condenseTranscript(`${prev} ${cleanedPhrase}`) : cleanedPhrase
+      );
       
       // In competitive mode, identify speaker automatically
       if (gameMode === "competitive" && players.length > 0 && profiles.length > 0 && analyserRef.current) {
@@ -224,7 +245,8 @@ export default function GamePage() {
           // Identify speaker
           const identifiedProfile = await identifySpeaker(audioBuffer);
           
-          const matchedAnswer = matchVoiceAnswer(transcript, round.answers);
+          // Match only on the current spoken phrase
+          const matchedAnswer = matchVoiceAnswer(cleanedPhrase, round.answers);
 
           if (matchedAnswer && identifiedProfile) {
             // Found speaker automatically - give credit
@@ -238,16 +260,16 @@ export default function GamePage() {
             handleAnswerSelect(matchedAnswer);
           }
         } catch (error) {
-          console.error("Error identifying speaker:", error);
-          // Fallback to regular answer matching
-          const matchedAnswer = matchVoiceAnswer(transcript, round.answers);
+              console.error("Error identifying speaker:", error);
+          // Fallback to regular answer matching on the current phrase
+          const matchedAnswer = matchVoiceAnswer(cleanedPhrase, round.answers);
           if (matchedAnswer) {
             handleAnswerSelect(matchedAnswer);
           }
         }
       } else {
         // Party mode or no profiles - no player tracking
-        const matchedAnswer = matchVoiceAnswer(transcript, round.answers);
+        const matchedAnswer = matchVoiceAnswer(cleanedPhrase, round.answers);
         if (matchedAnswer) {
           handleAnswerSelect(matchedAnswer);
         }
@@ -275,7 +297,9 @@ export default function GamePage() {
       
       // Small delay to ensure everything is ready, then start
       const timer = setTimeout(() => {
-        console.log("🎤 Auto-starting voice recognition for new question");
+        if (process.env.NODE_ENV === "development") {
+          console.log("🎤 Auto-starting voice recognition for new question");
+        }
         startListening();
       }, 300);
       return () => clearTimeout(timer);
@@ -296,7 +320,9 @@ export default function GamePage() {
 
     // If no category/subcategory, redirect back to categories
     if (!category || !subcategory) {
-      console.log("Missing category or subcategory, redirecting...", { category, subcategory });
+      if (process.env.NODE_ENV === "development") {
+        console.log("Missing category or subcategory, redirecting...", { category, subcategory });
+      }
       router.push("/categories");
       return;
     }
@@ -342,7 +368,6 @@ export default function GamePage() {
         }
 
         const roundData = await response.json();
-        console.log("Round data received:", roundData);
         if (isMounted) {
           setRound(roundData);
         }
@@ -373,6 +398,7 @@ export default function GamePage() {
   const handleNextRound = useCallback(() => {
     setSelectedAnswer(null);
     setShowResult(false);
+    setWrongAnswers(new Set()); // Reset wrong answers for new question
     setVoiceTranscript("");
     setFullTranscript(""); // Clear transcript for new question
     // Don't reset showAnswers - keep it in whatever state user set it
@@ -402,32 +428,50 @@ export default function GamePage() {
   }, [category, subcategory, stopListening]);
 
   const handleAnswerSelect = useCallback((answer: string) => {
-    if (showResult) return; // Prevent changing answer after reveal
-    // Don't stop listening here - let it continue until next question loads
-    setSelectedAnswer(answer);
-    setShowResult(true);
+    if (showResult) return; // Prevent changing answer after correct answer is revealed
+    
+    const isCorrect = round && answer === round.correctAnswer;
+    
+    if (isCorrect) {
+      // Correct answer - show result and stop listening
+      setSelectedAnswer(answer);
+      setShowResult(true);
+      
+      // Track question result in database
+      if (round?.id) {
+        fetch("/api/question-result", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            questionId: round.id,
+            answeredCorrectly: true,
+            playerId: gameMode === "competitive" && activePlayer ? activePlayer : undefined,
+          }),
+        }).catch((err) => console.error("Error saving question result:", err));
+      }
 
-    // Track question result in database
-    if (round?.id) {
-      const answeredCorrectly = answer === round.correctAnswer;
-      fetch("/api/question-result", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          questionId: round.id,
-          answeredCorrectly,
-          playerId: gameMode === "competitive" && activePlayer ? activePlayer : undefined,
-        }),
-      }).catch((err) => console.error("Error saving question result:", err));
-    }
-
-    // Auto-advance to next question if answer is correct
-    if (round && answer === round.correctAnswer) {
+      // Auto-advance to next question
       setTimeout(() => {
         handleNextRound();
       }, 2000); // Wait 2 seconds to show the correct answer
+    } else {
+      // Wrong answer - mark it as wrong but keep listening
+      setWrongAnswers((prev) => new Set([...prev, answer]));
+      
+      // Track wrong answer in database
+      if (round?.id) {
+        fetch("/api/question-result", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            questionId: round.id,
+            answeredCorrectly: false,
+            playerId: gameMode === "competitive" && activePlayer ? activePlayer : undefined,
+          }),
+        }).catch((err) => console.error("Error saving question result:", err));
+      }
     }
-  }, [round, showResult, stopListening, handleNextRound, gameMode, activePlayer]);
+  }, [round, showResult, handleNextRound, gameMode, activePlayer]);
 
   // Show final scores screen
   if (gameEnded) {
@@ -568,7 +612,7 @@ export default function GamePage() {
   }
 
   // Use answers in original order (no shuffling)
-  const answers = round.answers;
+  const answers = Array.isArray(round.answers) ? round.answers : [];
 
   return (
     <div className="min-h-[calc(100vh-6rem)] py-4">
@@ -686,7 +730,7 @@ export default function GamePage() {
                 </button>
               )}
             </div>
-            {fullTranscript && !showResult && (
+            {fullTranscript && (
               <div className="mt-2 max-h-16 overflow-y-auto rounded-md bg-slate-950/70 px-3 py-2 text-[11px] text-slate-400">
                 <div className="mb-1 font-semibold text-slate-300 text-[11px]">
                   Cabin transcript
@@ -707,7 +751,7 @@ export default function GamePage() {
         {/* Question */}
         <div className="rounded-2xl border border-slate-800/80 bg-slate-900/80 px-5 py-6 mb-5">
           <div className="mb-4 flex items-start justify-between gap-3">
-            <h2 className="text-xl md:text-2xl font-semibold tracking-tight flex-1">
+            <h2 className="text-xl md:text-2xl font-semibold tracking-tight flex-1 text-slate-50 drop-shadow-[0_1px_2px_rgba(0,0,0,0.8)]" role="heading" aria-level={2}>
               {round.question}
             </h2>
             {!showResult && (
@@ -725,11 +769,13 @@ export default function GamePage() {
           {/* Answers */}
           {showAnswers || showResult ? (
             <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
-              {answers.map((answer, index) => {
+              {answers && answers.length > 0 ? (
+                answers.map((answer, index) => {
                 const isSelected = selectedAnswer === answer;
                 const isCorrect = answer === round.correctAnswer;
-                const showCorrect = showResult && isCorrect;
-                const showIncorrect = showResult && isSelected && !isCorrect;
+                const isWrongAnswer = wrongAnswers.has(answer);
+                const showCorrect = showResult && isSelected && isCorrect;
+                const showIncorrect = (showResult && isSelected && !isCorrect) || isWrongAnswer;
 
                 let buttonClass =
                   "p-3.5 md:p-4 rounded-xl text-left text-sm md:text-base transition-all border-2 ";
@@ -745,9 +791,15 @@ export default function GamePage() {
                     buttonClass += "bg-slate-900/80 border-slate-700/80 text-slate-300";
                   }
                 } else {
-                  buttonClass += isSelected
-                    ? "bg-amber-500/15 border-amber-400 text-amber-100"
-                    : "bg-slate-900/80 border-slate-700/80 text-slate-100 hover:border-amber-400/60 hover:bg-slate-800/80";
+                  // Show wrong answers even when showResult is false
+                  if (isWrongAnswer) {
+                    buttonClass +=
+                      "bg-rose-500/10 border-rose-500/80 text-rose-100 shadow-md shadow-rose-500/20";
+                  } else {
+                    buttonClass += isSelected
+                      ? "bg-amber-500/15 border-amber-400 text-amber-100"
+                      : "bg-slate-900/80 border-slate-700/80 text-slate-100 hover:border-amber-400/60 hover:bg-slate-800/80";
+                  }
                 }
 
                 return (
@@ -756,6 +808,7 @@ export default function GamePage() {
                     onClick={() => handleAnswerSelect(answer)}
                     disabled={showResult}
                     className={buttonClass}
+                    aria-label={`Answer option ${index + 1}: ${answer}${isCorrect ? " (correct answer)" : ""}`}
                   >
                     <div className="flex items-center justify-between gap-2">
                       <span className="flex-1">{answer}</span>
@@ -764,7 +817,14 @@ export default function GamePage() {
                     </div>
                   </button>
                 );
-              })}
+              })
+              ) : (
+                <div className="text-center py-6">
+                  <p className="text-slate-400 text-sm md:text-base">
+                    Loading answers...
+                  </p>
+                </div>
+              )}
             </div>
           ) : (
             <div className="text-center py-6">

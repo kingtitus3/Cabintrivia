@@ -1867,5 +1867,1556 @@
     "gameType": "topten",
     "answeredCorrectly": false,
     "timestamp": 1764198820471
+  },
+  {
+    "id": "q_1764198946104_ayachbwwn",
+    "question": "Alright trivia titans, let's get ready to jam! We're talking about the tunes that get everyone on their feet. For your next Cabin Trivia challenge, we want you to name the Top 10 Best-Selling Music Artists of All Time!",
+    "listItems": [
+      "The Beatles",
+      "Elvis Presley",
+      "Michael Jackson",
+      "Madonna",
+      "Elton John",
+      "Led Zeppelin",
+      "Rihanna",
+      "Mariah Carey",
+      "Queen",
+      "Whitney Houston"
+    ],
+    "category": "top_10",
+    "subcategory": "All Lists",
+    "gameType": "topten",
+    "answeredCorrectly": false,
+    "timestamp": 1764198946104
+  },
+  {
+    "id": "q_1764198977995_pw3i7pdbr",
+    "question": "Alright party people, get ready to get your game on! For your next Cabin Trivia challenge, we're asking: What are the Top 10 Best-Selling Video Game Consoles of All Time?",
+    "listItems": [
+      "PlayStation 2",
+      "Nintendo DS",
+      "Game Boy",
+      "PlayStation 4",
+      "Nintendo Switch",
+      "PlayStation 3",
+      "Xbox 360",
+      "Wii",
+      "PlayStation",
+      "PlayStation 5"
+    ],
+    "category": "top_10",
+    "subcategory": "All Lists",
+    "gameType": "topten",
+    "answeredCorrectly": false,
+    "timestamp": 1764198977995
+  },
+  {
+    "id": "q_1764199199870_tqqzfse35",
+    "question": "Alright party people, get ready to dive into some deliciousness! For your next Cabin Trivia challenge, we're asking: What are the Top 10 most popular fast-food restaurants in the United States?",
+    "listItems": [
+      "McDonald's",
+      "Starbucks",
+      "Chick-fil-A",
+      "Taco Bell",
+      "Subway",
+      "Burger King",
+      "Wendy's",
+      "Domino's",
+      "Pizza Hut",
+      "Panera Bread"
+    ],
+    "category": "top_10",
+    "subcategory": "All Lists",
+    "gameType": "topten",
+    "answeredCorrectly": false,
+    "timestamp": 1764199199870
+  },
+  {
+    "id": "q_1764199199955_rjnubdpl5",
+    "question": "Alright party people, get ready to get your coffee fix! For your next Cabin Trivia challenge, we're asking: What are the Top 10 Largest Coffee Chains in the United States (by number of locations)?",
+    "listItems": [
+      "Starbucks",
+      "Dunkin'",
+      "Tim Hortons",
+      "Peet's Coffee",
+      "Caribou Coffee",
+      "Biggby Coffee",
+      "Dutch Bros Coffee",
+      "Scooter's Coffee",
+      "The Coffee Bean & Tea Leaf",
+      "Krispy Kreme"
+    ],
+    "category": "top_10",
+    "subcategory": "All Lists",
+    "gameType": "topten",
+    "answeredCorrectly": false,
+    "timestamp": 1764199199955
+  },
+  {
+    "id": "q_1764199462781_a6h7cq66d",
+    "question": "Alright party people, let's get ready to jam! For your next Cabin Trivia challenge, we're asking: What are the Top 10 Best-Selling Music Artists of All Time (by certified album units)?",
+    "listItems": [
+      "The Beatles",
+      "Elvis Presley",
+      "Michael Jackson",
+      "Led Zeppelin",
+      "Eagles",
+      "Garth Brooks",
+      "Billy Joel",
+      "Elton John",
+      "Mariah Carey",
+      "Queen"
+    ],
+    "category": "top_10",
+    "subcategory": "All Lists",
+    "gameType": "topten",
+    "answeredCorrectly": false,
+    "timestamp": 1764199462782
+  },
+  {
+    "id": "q_1764199677602_5s3hxt6jo",
+    "question": "Alright party people, get ready to get your snack on! For your next Cabin Trivia challenge, we're asking: What are the Top 10 most popular potato chip flavors in the United States?",
+    "listItems": [
+      "Original/Plain",
+      "Cheddar & Sour Cream",
+      "BBQ",
+      "Sour Cream & Onion",
+      "Salt & Vinegar",
+      "Jalapeño",
+      "Dill Pickle",
+      "Honey BBQ",
+      "Flamin' Hot",
+      "Ranch"
+    ],
+    "category": "top_10",
+    "subcategory": "All Lists",
+    "gameType": "topten",
+    "answeredCorrectly": false,
+    "timestamp": 1764199677602
+  },
+  {
+    "id": "q_1764199695510_d35dw5g8k",
+    "question": "Alright party people, get ready to sing along! For your next Cabin Trivia challenge, we're asking: What are the Top 10 Most Streamed Songs of the 2010s on Spotify (globally)?",
+    "listItems": [
+      "Shape of You (Ed Sheeran)",
+      "One Dance (Drake)",
+      "Closer (The Chainsmokers)",
+      "God's Plan (Drake)",
+      "Thinking Out Loud (Ed Sheeran)",
+      "Rockstar (Post Malone)",
+      "Cheap Thrills (Sia)",
+      "Despacito (Luis Fonsi)",
+      "Perfect (Ed Sheeran)",
+      "Havana (Camila Cabello)"
+    ],
+    "category": "top_10",
+    "subcategory": "All Lists",
+    "gameType": "topten",
+    "answeredCorrectly": false,
+    "timestamp": 1764199695510
+  },
+  {
+    "id": "q_1764199775474_0huo4yd7t",
+    "question": "Alright party people, let's get ready for some sweet treats! For your next Cabin Trivia challenge, we're asking: What are the Top 10 Best-Selling Candy Bars in the United States?",
+    "listItems": [
+      "Snickers",
+      "Reese's Peanut Butter Cups",
+      "Kit Kat",
+      "Twix",
+      "M&M's",
+      "Hershey's Milk Chocolate",
+      "3 Musketeers",
+      "Almond Joy",
+      "Butterfinger",
+      "Milky Way"
+    ],
+    "category": "top_10",
+    "subcategory": "All Lists",
+    "gameType": "topten",
+    "answeredCorrectly": false,
+    "timestamp": 1764199775474
+  },
+  {
+    "id": "q_1764199915176_oetysz7z2",
+    "question": "Alright party people, let's get ready for some breakfast fun! For your next Cabin Trivia challenge, we're asking: What are the Top 10 Most Popular Breakfast Cereals in the United States?",
+    "listItems": [
+      "Cheerios",
+      "Frosted Flakes",
+      "Honey Nut Cheerios",
+      "Lucky Charms",
+      "Froot Loops",
+      "Raisin Bran",
+      "Special K",
+      "Cinnamon Toast Crunch",
+      "Rice Krispies",
+      "Frosted Mini-Wheats"
+    ],
+    "category": "top_10",
+    "subcategory": "All Lists",
+    "gameType": "topten",
+    "answeredCorrectly": false,
+    "timestamp": 1764199915176
+  },
+  {
+    "id": "q_1764199915338_itao2ujk0",
+    "question": "Alright party people, get ready to get your game on! For your next Cabin Trivia challenge, we're asking: What are the Top 10 Best-Selling Video Game Consoles of all time?",
+    "listItems": [
+      "PlayStation 2",
+      "Nintendo DS",
+      "Nintendo Switch",
+      "Game Boy / Game Boy Color",
+      "PlayStation 4",
+      "PlayStation",
+      "PlayStation 3",
+      "Xbox 360",
+      "Wii",
+      "PlayStation Portable (PSP)"
+    ],
+    "category": "top_10",
+    "subcategory": "All Lists",
+    "gameType": "topten",
+    "answeredCorrectly": true,
+    "timestamp": 1764199915338
+  },
+  {
+    "id": "q_1764199998535_iq2ds3puv",
+    "question": "Alright party people, get ready to sing along! For your next Cabin Trivia challenge, we're asking: What are the Top 10 Best-Selling Music Artists of all time in the United States?",
+    "listItems": [
+      "The Beatles",
+      "Elvis Presley",
+      "Michael Jackson",
+      "Garth Brooks",
+      "Mariah Carey",
+      "Madonna",
+      "Taylor Swift",
+      "Whitney Houston",
+      "Celine Dion",
+      "Eagles"
+    ],
+    "category": "top_10",
+    "subcategory": "All Lists",
+    "gameType": "topten",
+    "answeredCorrectly": false,
+    "timestamp": 1764199998535
+  },
+  {
+    "id": "q_1764200017977_eks8cvnxk",
+    "question": "Alright party people, get ready to grab your remotes! For your next Cabin Trivia challenge, we're asking: What are the Top 10 Most Popular Streaming Services in the U.S. by Subscriber Count?",
+    "listItems": [
+      "Netflix",
+      "Amazon Prime Video",
+      "Hulu",
+      "Disney+",
+      "Max (formerly HBO Max)",
+      "Peacock",
+      "Apple TV+",
+      "Paramount+",
+      "Discovery+",
+      "Starz"
+    ],
+    "category": "top_10",
+    "subcategory": "All Lists",
+    "gameType": "topten",
+    "answeredCorrectly": false,
+    "timestamp": 1764200017977
+  },
+  {
+    "id": "q_1764200121899_8w1jzmc1g",
+    "question": "Alright party people, get ready to grab a slice! For your next Cabin Trivia challenge, we're asking: What are the Top 10 Most Popular Pizza Toppings in the U.S.?",
+    "listItems": [
+      "Pepperoni",
+      "Mushrooms",
+      "Onions",
+      "Sausage",
+      "Bacon",
+      "Extra Cheese",
+      "Black Olives",
+      "Green Peppers",
+      "Pineapple",
+      "Spinach"
+    ],
+    "category": "top_10",
+    "subcategory": "All Lists",
+    "gameType": "topten",
+    "answeredCorrectly": false,
+    "timestamp": 1764200121899
+  },
+  {
+    "id": "q_1764200145876_qdljfbcgw",
+    "question": "Alright party people, get ready to dive into some sweet nostalgia! For your next Cabin Trivia challenge, we're asking: What are the Top 10 Best-Selling Video Game Consoles of all time?",
+    "listItems": [
+      "PlayStation 2",
+      "Nintendo DS",
+      "Nintendo Switch",
+      "Game Boy",
+      "PlayStation 4",
+      "PlayStation",
+      "Wii",
+      "PlayStation 3",
+      "Xbox 360",
+      "Game Boy Advance"
+    ],
+    "category": "top_10",
+    "subcategory": "All Lists",
+    "gameType": "topten",
+    "answeredCorrectly": false,
+    "timestamp": 1764200145876
+  },
+  {
+    "id": "q_1764200161225_ls9dbg9h0",
+    "question": "Alright party people, get ready to sing along! For your next Cabin Trivia challenge, we're asking: What are the Top 10 Best-Selling Music Artists of All Time (by certified album units in the U.S.)?",
+    "listItems": [
+      "The Beatles",
+      "Elvis Presley",
+      "Michael Jackson",
+      "Led Zeppelin",
+      "Garth Brooks",
+      "Eagles",
+      "Billy Joel",
+      "Elton John",
+      "Mariah Carey",
+      "Queen"
+    ],
+    "category": "top_10",
+    "subcategory": "All Lists",
+    "gameType": "topten",
+    "answeredCorrectly": false,
+    "timestamp": 1764200161225
+  },
+  {
+    "id": "q_1764200170493_ka3f7zpw3",
+    "question": "Alright party people, get ready to grab a controller! For your next Cabin Trivia challenge, we're asking: What are the Top 10 Best-Selling Nintendo Switch Games of All Time?",
+    "listItems": [
+      "Mario Kart 8 Deluxe",
+      "Animal Crossing: New Horizons",
+      "Super Smash Bros. Ultimate",
+      "The Legend of Zelda: Breath of the Wild",
+      "Super Mario Odyssey",
+      "Pokémon Sword / Pokémon Shield",
+      "Pokémon Scarlet / Pokémon Violet",
+      "Super Mario Party",
+      "The Legend of Zelda: Tears of the Kingdom",
+      "Luigi's Mansion 3"
+    ],
+    "category": "top_10",
+    "subcategory": "All Lists",
+    "gameType": "topten",
+    "answeredCorrectly": false,
+    "timestamp": 1764200170493
+  },
+  {
+    "id": "q_1764200204544_no3fmrfsb",
+    "question": "Alright party people, get ready to grab a slice! For your next Cabin Trivia challenge, we're asking: What are the Top 10 Most Popular Pizza Toppings in the U.S.?",
+    "listItems": [
+      "Pepperoni",
+      "Mushrooms",
+      "Onions",
+      "Sausage",
+      "Bacon",
+      "Extra Cheese",
+      "Black Olives",
+      "Green Peppers",
+      "Pineapple",
+      "Spinach"
+    ],
+    "category": "top_10",
+    "subcategory": "All Lists",
+    "gameType": "topten",
+    "answeredCorrectly": true,
+    "timestamp": 1764200204544
+  },
+  {
+    "id": "q_1764200237574_wasvmuzxw",
+    "question": "Alright party people, get ready to get your sugar rush! For your next Cabin Trivia challenge, we're asking: What are the Top 10 Best-Selling Candy Bars in the U.S.?",
+    "listItems": [
+      "Snickers",
+      "Reese's Peanut Butter Cups",
+      "M&M's",
+      "Hershey's Milk Chocolate",
+      "Kit Kat",
+      "Twix",
+      "3 Musketeers",
+      "Butterfinger",
+      "Milky Way",
+      "Almond Joy"
+    ],
+    "category": "top_10",
+    "subcategory": "All Lists",
+    "gameType": "topten",
+    "answeredCorrectly": false,
+    "timestamp": 1764200237575
+  },
+  {
+    "id": "q_1764200294913_l1c4j46z8",
+    "question": "Alright party people, get ready to grab a remote! For your next Cabin Trivia challenge, we're asking: What are the Top 10 Most Streamed TV Shows on Netflix (U.S. in 2023)?",
+    "listItems": [
+      "Suits",
+      "The Night Agent",
+      "Ginny & Georgia",
+      "Wednesday",
+      "Outer Banks",
+      "Manifest",
+      "The Diplomat",
+      "Griselda",
+      "Queen Charlotte: A Bridgerton Story",
+      "You"
+    ],
+    "category": "top_10",
+    "subcategory": "All Lists",
+    "gameType": "topten",
+    "answeredCorrectly": false,
+    "timestamp": 1764200294913
+  },
+  {
+    "id": "q_1764200441178_0o0n0hyzd",
+    "question": "Alright party people, get ready to jingle all the way! For your next Cabin Trivia challenge, we're asking: What are the Top 10 Best-Selling Christmas Toys of All Time?",
+    "listItems": [
+      "Barbie",
+      "Hot Wheels",
+      "Lego",
+      "Cabbage Patch Kids",
+      "Rubik's Cube",
+      "Game Boy",
+      "Transformers",
+      "Tickle Me Elmo",
+      "Tamagotchi",
+      "Hatchimals"
+    ],
+    "category": "top_10",
+    "subcategory": "All Lists",
+    "gameType": "topten",
+    "answeredCorrectly": false,
+    "timestamp": 1764200441178
+  },
+  {
+    "id": "q_1764200464517_gi61200ye",
+    "question": "Alright party people, get ready to get your game on! For your next Cabin Trivia challenge, we're asking: What are the Top 10 Best-Selling Video Game Consoles of All Time?",
+    "listItems": [
+      "PlayStation 2",
+      "Nintendo DS",
+      "Nintendo Switch",
+      "Game Boy",
+      "PlayStation 4",
+      "PlayStation 1",
+      "Wii",
+      "PlayStation 3",
+      "Xbox 360",
+      "Game Boy Advance"
+    ],
+    "category": "top_10",
+    "subcategory": "All Lists",
+    "gameType": "topten",
+    "answeredCorrectly": true,
+    "timestamp": 1764200464517
+  },
+  {
+    "id": "q_1764200487819_wpi4pn02w",
+    "question": "Alright party people, get ready to get your popcorn ready! For your next Cabin Trivia challenge, we're asking: What are the Top 10 Highest-Grossing Animated Movies of All Time (Worldwide)?",
+    "listItems": [
+      "Avatar",
+      "Avengers: Endgame",
+      "Avatar: The Way of Water",
+      "Titanic",
+      "Star Wars: The Force Awakens",
+      "Avengers: Infinity War",
+      "Spider-Man: No Way Home",
+      "Jurassic World",
+      "The Lion King (2019)",
+      "The Avengers"
+    ],
+    "category": "top_10",
+    "subcategory": "All Lists",
+    "gameType": "topten",
+    "answeredCorrectly": false,
+    "timestamp": 1764200487820
+  },
+  {
+    "id": "q_1764200619960_hohfpmh9w",
+    "question": "Alright party people, get ready to get your snack on! For your next Cabin Trivia challenge, we're asking: What are the Top 10 Best-Selling Candy Bars in the U.S.?",
+    "listItems": [
+      "Snickers",
+      "Reese's Peanut Butter Cups",
+      "M&M's",
+      "Hershey's Milk Chocolate",
+      "Kit Kat",
+      "Twix",
+      "3 Musketeers",
+      "Butterfinger",
+      "Milky Way",
+      "Almond Joy (or Mounds)"
+    ],
+    "category": "top_10",
+    "subcategory": "All Lists",
+    "gameType": "topten",
+    "answeredCorrectly": false,
+    "timestamp": 1764200619960
+  },
+  {
+    "id": "q_1764200660591_cfsidbkyb",
+    "question": "Alright party people, get ready to get your game on! For your next Cabin Trivia challenge, we're asking: What are the Top 10 Best-Selling Board Games of All Time?",
+    "listItems": [
+      "Monopoly",
+      "Scrabble",
+      "Chess",
+      "Checkers",
+      "Candy Land",
+      "The Game of Life",
+      "Clue",
+      "Trivial Pursuit",
+      "Connect 4",
+      "Risk"
+    ],
+    "category": "top_10",
+    "subcategory": "All Lists",
+    "gameType": "topten",
+    "answeredCorrectly": true,
+    "timestamp": 1764200660591
+  },
+  {
+    "id": "q_1764200708508_vj0lwwtj7",
+    "question": "Alright party people, get ready to get your groove on! For your next Cabin Trivia challenge, we're asking: What are the Top 10 Best-Selling Music Artists of All Time in the U.S. (based on certified units)?",
+    "listItems": [
+      "The Beatles",
+      "Elvis Presley",
+      "Michael Jackson",
+      "Led Zeppelin",
+      "Garth Brooks",
+      "Eagles",
+      "Billy Joel",
+      "Elton John",
+      "Mariah Carey",
+      "Queen"
+    ],
+    "category": "top_10",
+    "subcategory": "All Lists",
+    "gameType": "topten",
+    "answeredCorrectly": false,
+    "timestamp": 1764200708508
+  },
+  {
+    "id": "q_1764201129018_kz6k1tzkp",
+    "question": "Which classic American breakfast food is often referred to as 'hotcakes' or 'flapjacks'?",
+    "answers": [
+      "Waffles",
+      "Pancakes",
+      "French Toast",
+      "Crepes"
+    ],
+    "correctAnswer": "Pancakes",
+    "category": "all",
+    "subcategory": "All Topics",
+    "gameType": "trivia",
+    "answeredCorrectly": true,
+    "timestamp": 1764201129018
+  },
+  {
+    "id": "q_1764201139273_0ce95ptxx",
+    "question": "Which classic American breakfast food is often referred to as 'hotcakes' or 'flapjacks'?",
+    "answers": [
+      "Waffles",
+      "Pancakes",
+      "French Toast",
+      "Grits"
+    ],
+    "correctAnswer": "Pancakes",
+    "category": "all",
+    "subcategory": "All Topics",
+    "gameType": "trivia",
+    "answeredCorrectly": true,
+    "timestamp": 1764201139274
+  },
+  {
+    "id": "q_1764201149264_ma9s8kgg1",
+    "question": "Which of these famous American dishes is NOT traditionally made with potatoes?",
+    "answers": [
+      "Hash Browns",
+      "French Fries",
+      "Coleslaw",
+      "Mashed Potatoes"
+    ],
+    "correctAnswer": "Coleslaw",
+    "category": "all",
+    "subcategory": "All Topics",
+    "gameType": "trivia",
+    "answeredCorrectly": true,
+    "timestamp": 1764201149264
+  },
+  {
+    "id": "q_1764201164510_iszx08ua0",
+    "question": "Which of these classic American diner foods was originally called 'smashed fried potatoes'?",
+    "answers": [
+      "French Fries",
+      "Hash Browns",
+      "Tater Tots",
+      "Home Fries"
+    ],
+    "correctAnswer": "Hash Browns",
+    "category": "all",
+    "subcategory": "All Topics",
+    "gameType": "trivia",
+    "answeredCorrectly": true,
+    "timestamp": 1764201164510
+  },
+  {
+    "id": "q_1764201177071_jkyhdb9jf",
+    "question": "Which classic American cookie is famously dipped in milk, often leading to the jingle 'Oreo, the world's favorite cookie... and milk's favorite cookie'?",
+    "answers": [
+      "Chocolate Chip Cookie",
+      "Peanut Butter Cookie",
+      "Oreo",
+      "Snickerdoodle"
+    ],
+    "correctAnswer": "Oreo",
+    "category": "all",
+    "subcategory": "All Topics",
+    "gameType": "trivia",
+    "answeredCorrectly": true,
+    "timestamp": 1764201177071
+  },
+  {
+    "id": "q_1764201187873_3im3w6upz",
+    "question": "Which classic American breakfast food is often referred to as 'hotcakes' or 'flapjacks'?",
+    "answers": [
+      "Waffles",
+      "Pancakes",
+      "French Toast",
+      "Grits"
+    ],
+    "correctAnswer": "Pancakes",
+    "category": "all",
+    "subcategory": "All Topics",
+    "gameType": "trivia",
+    "answeredCorrectly": true,
+    "timestamp": 1764201187873
+  },
+  {
+    "id": "q_1764201200645_j71045ras",
+    "question": "Which classic board game challenges players to buy, sell, and mortgage properties with the goal of bankrupting their opponents?",
+    "answers": [
+      "Clue",
+      "Monopoly",
+      "The Game of Life",
+      "Scrabble"
+    ],
+    "correctAnswer": "Monopoly",
+    "category": "all",
+    "subcategory": "All Topics",
+    "gameType": "trivia",
+    "answeredCorrectly": false,
+    "timestamp": 1764201200645
+  },
+  {
+    "id": "q_1764201447021_6xukde3d1",
+    "question": "Alright party people, get ready to get your 'toon' on! For your next Cabin Trivia challenge, we're asking: What are the Top 10 Most Popular Disney Animated Feature Films of All Time (based on worldwide box office gross)?",
+    "listItems": [
+      "Frozen 2",
+      "Frozen",
+      "Incredibles 2",
+      "Toy Story 4",
+      "Toy Story 3",
+      "The Lion King (1994)",
+      "Zootopia",
+      "Finding Dory",
+      "Despicable Me 3",
+      "Finding Nemo"
+    ],
+    "category": "top_10",
+    "subcategory": "All Lists",
+    "gameType": "topten",
+    "answeredCorrectly": false,
+    "timestamp": 1764201447022
+  },
+  {
+    "id": "q_1764201447534_oplrn1knq",
+    "question": "Alright party people, get ready to get your streaming fingers ready! For your next Cabin Trivia challenge, we're asking: What are the Top 10 Most-Watched TV Shows on Netflix in the U.S. (based on hours viewed)?",
+    "listItems": [
+      "Squid Game",
+      "Wednesday",
+      "Stranger Things (Season 4)",
+      "Dahmer (Monster: The Jeffrey Dahmer Story)",
+      "Bridgerton (Season 1)",
+      "Money Heist (Part 4)",
+      "The Queen's Gambit",
+      "Lucifer (Season 5)",
+      "All of Us Are Dead",
+      "Outer Banks (Season 2)"
+    ],
+    "category": "top_10",
+    "subcategory": "All Lists",
+    "gameType": "topten",
+    "answeredCorrectly": false,
+    "timestamp": 1764201447535
+  },
+  {
+    "id": "q_1764202132976_95vzdbt2y",
+    "question": "Alright party people, get ready to get your fast food fix! For your next Cabin Trivia challenge, we're asking: What are the Top 10 Most Popular Fast Food Chains in the U.S. (based on market share)?",
+    "listItems": [
+      "McDonald's",
+      "Starbucks",
+      "Chick-fil-A",
+      "Taco Bell",
+      "Burger King",
+      "Subway",
+      "Wendy's",
+      "Domino's",
+      "Pizza Hut",
+      "Dunkin'"
+    ],
+    "category": "top_10",
+    "subcategory": "All Lists",
+    "gameType": "topten",
+    "answeredCorrectly": false,
+    "timestamp": 1764202132976
+  },
+  {
+    "id": "q_1764202136587_3r4cxmx41",
+    "question": "Alright party people, get ready to get your sugar rush on! For your next Cabin Trivia challenge, we're asking: What are the Top 10 Best-Selling Candy Bars in the U.S.?",
+    "listItems": [
+      "Snickers",
+      "Reese's Peanut Butter Cups",
+      "M&M's",
+      "Hershey's Milk Chocolate",
+      "Kit Kat",
+      "Twix",
+      "3 Musketeers",
+      "Butterfinger",
+      "Milky Way",
+      "Almond Joy"
+    ],
+    "category": "top_10",
+    "subcategory": "All Lists",
+    "gameType": "topten",
+    "answeredCorrectly": false,
+    "timestamp": 1764202136587
+  },
+  {
+    "id": "q_1764202239236_0v7vc47ap",
+    "question": "Which of these famously family-friendly breeds consistently holds the top spot for most registered dogs in the American Kennel Club?",
+    "answers": [
+      "Golden Retriever",
+      "German Shepherd",
+      "French Bulldog",
+      "Labrador Retriever"
+    ],
+    "correctAnswer": "Labrador Retriever",
+    "category": "pets_animals",
+    "subcategory": "Top Dog Breeds in America",
+    "gameType": "trivia",
+    "answeredCorrectly": false,
+    "timestamp": 1764202239236
+  },
+  {
+    "id": "q_1764202239289_02n911z55",
+    "question": "Which of these popular dog breeds, known for its friendly demeanor and golden coat, has consistently been ranked among the top 5 most popular breeds in America for years?",
+    "answers": [
+      "Poodle",
+      "German Shepherd",
+      "Golden Retriever",
+      "Beagle"
+    ],
+    "correctAnswer": "Golden Retriever",
+    "category": "pets_animals",
+    "subcategory": "Top Dog Breeds in America",
+    "gameType": "trivia",
+    "answeredCorrectly": false,
+    "timestamp": 1764202239289
+  },
+  {
+    "id": "q_1764202355323_5o3sdsjai",
+    "question": "Which classic American breakfast dish, often served with maple syrup and butter, is made from a batter cooked on a griddle and known for its distinct squares or pockets?",
+    "answers": [
+      "Pancakes",
+      "French Toast",
+      "Waffles",
+      "Crepes"
+    ],
+    "correctAnswer": "Waffles",
+    "category": "food_cooking",
+    "subcategory": "Popular American Dishes",
+    "gameType": "trivia",
+    "answeredCorrectly": true,
+    "timestamp": 1764202355323
+  },
+  {
+    "id": "q_1764202355331_nw8eq8jlh",
+    "question": "Which classic American breakfast dish, often served with maple syrup and butter, is made from a batter cooked on a griddle with distinct square indentations?",
+    "answers": [
+      "Pancakes",
+      "French Toast",
+      "Waffles",
+      "Crepes"
+    ],
+    "correctAnswer": "Waffles",
+    "category": "food_cooking",
+    "subcategory": "Popular American Dishes",
+    "gameType": "trivia",
+    "answeredCorrectly": false,
+    "timestamp": 1764202355331
+  },
+  {
+    "id": "q_1764202367343_pfousqa5b",
+    "question": "Often served with fried chicken, what breakfast staple is typically made from a leavened batter cooked in a specialized iron, creating a grid-like pattern perfect for holding syrup?",
+    "answers": [
+      "Pancakes",
+      "French Toast",
+      "Waffles",
+      "Crepes"
+    ],
+    "correctAnswer": "Waffles",
+    "category": "food_cooking",
+    "subcategory": "Popular American Dishes",
+    "gameType": "trivia",
+    "answeredCorrectly": true,
+    "timestamp": 1764202367343
+  },
+  {
+    "id": "q_1764202377337_xketufu6v",
+    "question": "Which popular American breakfast dish, known for its deep pockets perfect for holding syrup and often served with fruit or whipped cream, is typically cooked in a specialized iron?",
+    "answers": [
+      "Pancakes",
+      "French Toast",
+      "Waffles",
+      "Crepes"
+    ],
+    "correctAnswer": "Waffles",
+    "category": "food_cooking",
+    "subcategory": "Popular American Dishes",
+    "gameType": "trivia",
+    "answeredCorrectly": true,
+    "timestamp": 1764202377337
+  },
+  {
+    "id": "q_1764202388586_20o5w311i",
+    "question": "Which popular American breakfast dish, often enjoyed with syrup and berries, is characterized by its signature grid pattern created by a specialized iron and is a staple at diners across the country?",
+    "answers": [
+      "Pancakes",
+      "French Toast",
+      "Waffles",
+      "Crepes"
+    ],
+    "correctAnswer": "Waffles",
+    "category": "food_cooking",
+    "subcategory": "Popular American Dishes",
+    "gameType": "trivia",
+    "answeredCorrectly": true,
+    "timestamp": 1764202388586
+  },
+  {
+    "id": "q_1764202400832_bp5bqsrus",
+    "question": "Which popular American breakfast dish, often served alongside fried chicken or topped with fruit, is made from a leavened batter cooked in an iron and recognized by its distinct grid pattern?",
+    "answers": [
+      "Pancakes",
+      "French Toast",
+      "Waffles",
+      "Crepes"
+    ],
+    "correctAnswer": "Waffles",
+    "category": "food_cooking",
+    "subcategory": "Popular American Dishes",
+    "gameType": "trivia",
+    "answeredCorrectly": true,
+    "timestamp": 1764202400832
+  },
+  {
+    "id": "q_1764202582634_kljmmja7t",
+    "question": "Which popular American breakfast item, often featured in diners and known for its golden-brown exterior and fluffy interior, is a leavened batter cooked in a specialized iron, creating a signature grid pattern?",
+    "answers": [
+      "Pancakes",
+      "French Toast",
+      "Waffles",
+      "Crepes"
+    ],
+    "correctAnswer": "Waffles",
+    "category": "food_cooking",
+    "subcategory": "Popular American Dishes",
+    "gameType": "trivia",
+    "answeredCorrectly": true,
+    "timestamp": 1764202582635
+  },
+  {
+    "id": "q_1764202587737_7nfmg42df",
+    "question": "Which beloved American breakfast food, often round and doughy, is typically sliced horizontally and toasted, then spread with cream cheese or butter?",
+    "answers": [
+      "Pancakes",
+      "Bagel",
+      "English Muffin",
+      "Crumpet"
+    ],
+    "correctAnswer": "Bagel",
+    "category": "food_cooking",
+    "subcategory": "Popular American Dishes",
+    "gameType": "trivia",
+    "answeredCorrectly": false,
+    "timestamp": 1764202587737
+  },
+  {
+    "id": "q_1764202602724_q0j56e9wx",
+    "question": "Which classic American breakfast food, often described as 'fluffy' and typically served in a stack, is made from a batter cooked on a griddle and is a flat, round cake?",
+    "answers": [
+      "Pancakes",
+      "French Toast",
+      "Crepes",
+      "Blintzes"
+    ],
+    "correctAnswer": "Pancakes",
+    "category": "food_cooking",
+    "subcategory": "Popular American Dishes",
+    "gameType": "trivia",
+    "answeredCorrectly": true,
+    "timestamp": 1764202602724
+  },
+  {
+    "id": "q_1764202615397_k3ebt812o",
+    "question": "Often served with bacon and eggs, what breakfast dish is made from a thin, unleavened flour tortilla, folded and filled with ingredients like cheese, beans, or meat?",
+    "answers": [
+      "Pancakes",
+      "Waffles",
+      "Breakfast Burrito",
+      "French Toast"
+    ],
+    "correctAnswer": "Breakfast Burrito",
+    "category": "food_cooking",
+    "subcategory": "Popular American Dishes",
+    "gameType": "trivia",
+    "answeredCorrectly": true,
+    "timestamp": 1764202615397
+  },
+  {
+    "id": "q_1764202624905_017glunvf",
+    "question": "Which popular American breakfast dish, often served in a stack and known for its fluffy texture, is made from a batter cooked on a griddle until golden brown?",
+    "answers": [
+      "Waffles",
+      "Pancakes",
+      "French Toast",
+      "Crepes"
+    ],
+    "correctAnswer": "Pancakes",
+    "category": "food_cooking",
+    "subcategory": "Popular American Dishes",
+    "gameType": "trivia",
+    "answeredCorrectly": false,
+    "timestamp": 1764202624905
+  },
+  {
+    "id": "q_1764202645024_vmgfstg88",
+    "question": "Which popular American breakfast dish, often cylindrical in shape and filled with combinations of eggs, cheese, and various meats, is then wrapped in a flour tortilla?",
+    "answers": [
+      "Breakfast Burrito",
+      "Breakfast Sandwich",
+      "Breakfast Taco",
+      "Breakfast Roll"
+    ],
+    "correctAnswer": "Breakfast Burrito",
+    "category": "food_cooking",
+    "subcategory": "Popular American Dishes",
+    "gameType": "trivia",
+    "answeredCorrectly": false,
+    "timestamp": 1764202645024
+  },
+  {
+    "id": "q_1764202656911_t48fgyexg",
+    "question": "Which savory American breakfast dish, often containing scrambled eggs, cheese, and sometimes sausage or bacon, is wrapped in a warm flour tortilla?",
+    "answers": [
+      "Breakfast Burrito",
+      "Huevos Rancheros",
+      "Breakfast Taco",
+      "Migas"
+    ],
+    "correctAnswer": "Breakfast Burrito",
+    "category": "food_cooking",
+    "subcategory": "Popular American Dishes",
+    "gameType": "trivia",
+    "answeredCorrectly": true,
+    "timestamp": 1764202656911
+  },
+  {
+    "id": "q_1764203040252_d2aahxp7g",
+    "question": "Which iconic American comfort food, often served in a casserole dish, is traditionally made with ground beef, a creamy sauce, and topped with a layer of mashed potatoes?",
+    "answers": [
+      "Shepherd's Pie",
+      "Chicken Pot Pie",
+      "Beef Stroganoff",
+      "Meatloaf"
+    ],
+    "correctAnswer": "Shepherd's Pie",
+    "category": "food_cooking",
+    "subcategory": "Popular American Dishes",
+    "gameType": "trivia",
+    "answeredCorrectly": true,
+    "timestamp": 1764203040252
+  },
+  {
+    "id": "q_1764203065766_kguhzkdkg",
+    "question": "Which iconic American sandwich, often called a 'grill cheese' in some regions, features melted cheese between two slices of bread, typically buttered and toasted until golden brown?",
+    "answers": [
+      "Reuben Sandwich",
+      "Philly Cheesesteak",
+      "Grilled Cheese",
+      "BLT"
+    ],
+    "correctAnswer": "Grilled Cheese",
+    "category": "food_cooking",
+    "subcategory": "Popular American Dishes",
+    "gameType": "trivia",
+    "answeredCorrectly": false,
+    "timestamp": 1764203065766
+  },
+  {
+    "id": "q_1764203158264_k16bnt99e",
+    "question": "Which beloved American dessert, often associated with holidays and picnics, features a flaky pastry crust filled with a sweet, spiced apple mixture?",
+    "answers": [
+      "Pumpkin Pie",
+      "Apple Pie",
+      "Cherry Pie",
+      "Pecan Pie"
+    ],
+    "correctAnswer": "Apple Pie",
+    "category": "food_cooking",
+    "subcategory": "Popular American Dishes",
+    "gameType": "trivia",
+    "answeredCorrectly": false,
+    "timestamp": 1764203158264
+  },
+  {
+    "id": "q_1764203158733_y04hvbdbo",
+    "question": "Which iconic American dessert, often associated with holidays and picnics, features a sweet or savory filling baked inside a pastry crust, with fruit varieties being among the most popular?",
+    "answers": [
+      "Cheesecake",
+      "Apple Pie",
+      "Brownie",
+      "Doughnut"
+    ],
+    "correctAnswer": "Apple Pie",
+    "category": "food_cooking",
+    "subcategory": "Popular American Dishes",
+    "gameType": "trivia",
+    "answeredCorrectly": false,
+    "timestamp": 1764203158733
+  },
+  {
+    "id": "q_1764203159793_tmyctw6ga",
+    "question": "Which classic American appetizer, often found in sports bars and casual restaurants, consists of deep-fried potato strips usually served with ketchup or other dipping sauces?",
+    "answers": [
+      "Onion Rings",
+      "Mozzarella Sticks",
+      "French Fries",
+      "Chicken Tenders"
+    ],
+    "correctAnswer": "French Fries",
+    "category": "food_cooking",
+    "subcategory": "Popular American Dishes",
+    "gameType": "trivia",
+    "answeredCorrectly": false,
+    "timestamp": 1764203159793
+  },
+  {
+    "id": "q_1764203164272_00ve85uum",
+    "question": "Which classic American dish, often associated with Southern cuisine, features chicken pieces fried until crispy, typically seasoned with various spices and herbs?",
+    "answers": [
+      "Chicken and Dumplings",
+      "Fried Chicken",
+      "Chicken Pot Pie",
+      "Chicken Fried Steak"
+    ],
+    "correctAnswer": "Fried Chicken",
+    "category": "food_cooking",
+    "subcategory": "Popular American Dishes",
+    "gameType": "trivia",
+    "answeredCorrectly": false,
+    "timestamp": 1764203164272
+  },
+  {
+    "id": "q_1764203167733_kj1l2dnvk",
+    "question": "Often served at barbecues and potlucks, which popular American side dish consists of shredded cabbage, carrots, and sometimes other vegetables, typically mixed in a creamy dressing?",
+    "answers": [
+      "Potato Salad",
+      "Coleslaw",
+      "Macaroni Salad",
+      "Baked Beans"
+    ],
+    "correctAnswer": "Coleslaw",
+    "category": "food_cooking",
+    "subcategory": "Popular American Dishes",
+    "gameType": "trivia",
+    "answeredCorrectly": false,
+    "timestamp": 1764203167733
+  },
+  {
+    "id": "q_1764203177719_e55ke7a7z",
+    "question": "Which iconic American diner staple, often served on a toasted bun with lettuce, tomato, onions, and pickles, features a grilled patty of ground beef as its centerpiece?",
+    "answers": [
+      "Hot Dog",
+      "Hamburger",
+      "Philly Cheesesteak",
+      "Reuben Sandwich"
+    ],
+    "correctAnswer": "Hamburger",
+    "category": "food_cooking",
+    "subcategory": "Popular American Dishes",
+    "gameType": "trivia",
+    "answeredCorrectly": true,
+    "timestamp": 1764203177719
+  },
+  {
+    "id": "q_1764203216866_wy1qh9s34",
+    "question": "Which popular American seafood dish, often enjoyed during summer months, features shrimp, corn on the cob, potatoes, and sausage, all boiled together with Old Bay seasoning?",
+    "answers": [
+      "Clam Chowder",
+      "Shrimp and Grits",
+      "Lowcountry Boil",
+      "Fish and Chips"
+    ],
+    "correctAnswer": "Lowcountry Boil",
+    "category": "food_cooking",
+    "subcategory": "Popular American Dishes",
+    "gameType": "trivia",
+    "answeredCorrectly": false,
+    "timestamp": 1764203216866
+  },
+  {
+    "id": "q_1764203296232_y59f494ez",
+    "question": "Alright party people, get ready to get your game on! For your next Cabin Trivia challenge, we're asking: What are the Top 10 Best-Selling Board Games of All Time?",
+    "listItems": [
+      "Monopoly",
+      "Scrabble",
+      "Chess",
+      "Checkers",
+      "The Game of Life",
+      "Candy Land",
+      "Trivial Pursuit",
+      "Pictionary",
+      "Clue",
+      "Risk"
+    ],
+    "category": "top_10",
+    "subcategory": "All Lists",
+    "gameType": "topten",
+    "answeredCorrectly": false,
+    "timestamp": 1764203296232
+  },
+  {
+    "id": "q_1764203296445_sn9foimv6",
+    "question": "Alright party people, get ready to get your game on! For your next Cabin Trivia challenge, we're asking: What are the Top 10 Best-Selling Board Games in the U.S. of all time?",
+    "listItems": [
+      "Monopoly",
+      "Scrabble",
+      "Chess",
+      "Checkers",
+      "Candyland",
+      "The Game of Life",
+      "Clue",
+      "Trivial Pursuit",
+      "Battleship",
+      "Risk"
+    ],
+    "category": "top_10",
+    "subcategory": "All Lists",
+    "gameType": "topten",
+    "answeredCorrectly": false,
+    "timestamp": 1764203296445
+  },
+  {
+    "id": "q_1764203559614_ozp82kow2",
+    "question": "Alright party people, get ready to get your movie night munchies on! For your next Cabin Trivia challenge, we're asking: What are the Top 10 Most Popular Movie Theater Candies in the U.S.?",
+    "listItems": [
+      "M&M's",
+      "Reese's Pieces",
+      "Sour Patch Kids",
+      "Twizzlers",
+      "Skittles",
+      "Milk Duds",
+      "Junior Mints",
+      "Gummy Bears",
+      "Sno-Caps",
+      "Whoppers"
+    ],
+    "category": "top_10",
+    "subcategory": "All Lists",
+    "gameType": "topten",
+    "answeredCorrectly": false,
+    "timestamp": 1764203559614
+  },
+  {
+    "id": "q_1764204039307_exgj7osw1",
+    "question": "Which of these common craft supplies is typically used to adhere two pieces of fabric together without sewing?",
+    "answers": [
+      "Hot glue gun",
+      "Embroidery floss",
+      "Mod Podge",
+      "Polymer clay"
+    ],
+    "correctAnswer": "Hot glue gun",
+    "category": "arts_crafts",
+    "subcategory": "Craft Supplies",
+    "gameType": "trivia",
+    "answeredCorrectly": true,
+    "timestamp": 1764204039307
+  },
+  {
+    "id": "q_1764204039456_w7b667l1p",
+    "question": "Which of these craft supplies is often used for adding a textured, fuzzy surface to projects, commonly seen on children's artwork or scrapbook pages?",
+    "answers": [
+      "Glitter glue",
+      "Pipe cleaners",
+      "Felt sheets",
+      "Pompoms"
+    ],
+    "correctAnswer": "Pompoms",
+    "category": "arts_crafts",
+    "subcategory": "Craft Supplies",
+    "gameType": "trivia",
+    "answeredCorrectly": false,
+    "timestamp": 1764204039456
+  },
+  {
+    "id": "q_1764204054099_hiag1sqfr",
+    "question": "Which of these craft supplies is a type of adhesive material often used for temporary mounting, allowing for repositioning without damaging surfaces, and is commonly found in blue or white putty-like forms?",
+    "answers": [
+      "Duct Tape",
+      "Washi Tape",
+      "Mounting Putty",
+      "Super Glue"
+    ],
+    "correctAnswer": "Mounting Putty",
+    "category": "arts_crafts",
+    "subcategory": "Craft Supplies",
+    "gameType": "trivia",
+    "answeredCorrectly": true,
+    "timestamp": 1764204054099
+  },
+  {
+    "id": "q_1764204075485_ysbtpd369",
+    "question": "Often made from wood or plastic, what crafting tool is used to stretch and hold fabric taut while embroidering or cross-stitching?",
+    "answers": [
+      "Embroidery Hoop",
+      "Knitting Loom",
+      "Weaving Shuttle",
+      "Tatting Needle"
+    ],
+    "correctAnswer": "Embroidery Hoop",
+    "category": "arts_crafts",
+    "subcategory": "Craft Supplies",
+    "gameType": "trivia",
+    "answeredCorrectly": true,
+    "timestamp": 1764204075486
+  },
+  {
+    "id": "q_1764204089821_5se9qv5iy",
+    "question": "Often made from metal or plastic, what small, sharp tool is used to precisely cut intricate designs from paper or other thin materials, particularly popular in scrapbooking and card making?",
+    "answers": [
+      "Rotary cutter",
+      "Pinking shears",
+      "Craft knife",
+      "Paper crimper"
+    ],
+    "correctAnswer": "Craft knife",
+    "category": "arts_crafts",
+    "subcategory": "Craft Supplies",
+    "gameType": "trivia",
+    "answeredCorrectly": true,
+    "timestamp": 1764204089821
+  },
+  {
+    "id": "q_1764204113831_5986lf8lc",
+    "question": "Which of these craft supplies is a pliable, often colorful, material commonly used for sculpting small figures, creating beads, or forming decorative elements that are then baked to harden?",
+    "answers": [
+      "Polymer clay",
+      "Air-dry clay",
+      "Modeling dough",
+      "Cold porcelain"
+    ],
+    "correctAnswer": "Polymer clay",
+    "category": "arts_crafts",
+    "subcategory": "Craft Supplies",
+    "gameType": "trivia",
+    "answeredCorrectly": true,
+    "timestamp": 1764204113831
+  },
+  {
+    "id": "q_1764204140010_n7ozafl1v",
+    "question": "Often found in various weights and textures, what type of paper is specifically designed to absorb water and pigment evenly, making it ideal for watercolor painting?",
+    "answers": [
+      "Construction paper",
+      "Cardstock",
+      "Watercolor paper",
+      "Printer paper"
+    ],
+    "correctAnswer": "Watercolor paper",
+    "category": "arts_crafts",
+    "subcategory": "Craft Supplies",
+    "gameType": "trivia",
+    "answeredCorrectly": true,
+    "timestamp": 1764204140010
+  },
+  {
+    "id": "q_1764204154562_d5d6i7x7n",
+    "question": "Which of these craft supplies is a translucent, often colored, sheet of material used for creating stained glass effects or decorative window clings, and can be cut with scissors?",
+    "answers": [
+      "Vellum paper",
+      "Shrink plastic",
+      "Cellophane",
+      "Contact paper"
+    ],
+    "correctAnswer": "Cellophane",
+    "category": "arts_crafts",
+    "subcategory": "Craft Supplies",
+    "gameType": "trivia",
+    "answeredCorrectly": true,
+    "timestamp": 1764204154562
+  },
+  {
+    "id": "q_1764204175277_8ru7fcjud",
+    "question": "Often applied with a brush or roller, what craft supply is used to prepare a surface, like a canvas, before painting, creating a smooth and even base for your artwork?",
+    "answers": [
+      "Varnish",
+      "Gesso",
+      "Turpentine",
+      "Fixative"
+    ],
+    "correctAnswer": "Gesso",
+    "category": "arts_crafts",
+    "subcategory": "Craft Supplies",
+    "gameType": "trivia",
+    "answeredCorrectly": true,
+    "timestamp": 1764204175277
+  },
+  {
+    "id": "q_1764204213188_kjftncto6",
+    "question": "What common craft supply, often a thin wire wrapped in soft fibers, is frequently bent and twisted to create animal figures, pipe cleaners, or fuzzy decorations?",
+    "answers": [
+      "Chenille stems",
+      "Felt sheets",
+      "Googly eyes",
+      "Pom-poms"
+    ],
+    "correctAnswer": "Chenille stems",
+    "category": "arts_crafts",
+    "subcategory": "Craft Supplies",
+    "gameType": "trivia",
+    "answeredCorrectly": true,
+    "timestamp": 1764204213188
+  },
+  {
+    "id": "q_1764204243653_zo5tyk3j3",
+    "question": "What common craft supply, often a thin string or yarn, is used to thread beads, create macrame, or tie off friendship bracelets?",
+    "answers": [
+      "Duct Tape",
+      "Fishing Line",
+      "Embroidery Floss",
+      "Twine"
+    ],
+    "correctAnswer": "Embroidery Floss",
+    "category": "arts_crafts",
+    "subcategory": "Craft Supplies",
+    "gameType": "trivia",
+    "answeredCorrectly": true,
+    "timestamp": 1764204243653
+  },
+  {
+    "id": "q_1764204269636_ru691e77k",
+    "question": "What common craft supply, often a thin length of wax-coated thread, is used to strengthen stitched seams, create jewelry, or even re-sole shoes?",
+    "answers": [
+      "Embroidery Floss",
+      "Baker's Twine",
+      "Upholstery Thread",
+      "Waxed Linen Thread"
+    ],
+    "correctAnswer": "Waxed Linen Thread",
+    "category": "arts_crafts",
+    "subcategory": "Craft Supplies",
+    "gameType": "trivia",
+    "answeredCorrectly": true,
+    "timestamp": 1764204269636
+  },
+  {
+    "id": "q_1764204288407_af8s6zhec",
+    "question": "Often made from silicone or plastic, what crafting tool is used to create multiple identical shapes from liquid materials like resin, chocolate, or soap?",
+    "answers": [
+      "Punch",
+      "Mold",
+      "Die-cut machine",
+      "Stamper"
+    ],
+    "correctAnswer": "Mold",
+    "category": "arts_crafts",
+    "subcategory": "Craft Supplies",
+    "gameType": "trivia",
+    "answeredCorrectly": true,
+    "timestamp": 1764204288407
+  },
+  {
+    "id": "q_1764204304241_ws3eghmip",
+    "question": "What common crafting adhesive, often sold in sticks or liquid bottles, is known for its quick drying time and strong bond, making it a staple for paper crafts, scrapbooking, and school projects?",
+    "answers": [
+      "Epoxy Resin",
+      "Hot Glue",
+      "Wood Glue",
+      "Rubber Cement"
+    ],
+    "correctAnswer": "Hot Glue",
+    "category": "arts_crafts",
+    "subcategory": "Craft Supplies",
+    "gameType": "trivia",
+    "answeredCorrectly": true,
+    "timestamp": 1764204304241
+  },
+  {
+    "id": "q_1764204336999_yvdmw0e6j",
+    "question": "What specialized tool, often with a fine, pointed tip, is used in paper crafting to create small, decorative holes or patterns by pricking the paper, especially for techniques like parchment craft or piercing cards?",
+    "answers": [
+      "Crimping tool",
+      "Embossing stylus",
+      "Paper piercer",
+      "Scoring board"
+    ],
+    "correctAnswer": "Paper piercer",
+    "category": "arts_crafts",
+    "subcategory": "Craft Supplies",
+    "gameType": "trivia",
+    "answeredCorrectly": true,
+    "timestamp": 1764204336999
+  },
+  {
+    "id": "q_1764204378854_quxnpyx6r",
+    "question": "Which craft supply, often a flexible sheet with a cut-out design, is used to transfer a pattern or image onto a surface by applying paint or ink through the open areas?",
+    "answers": [
+      "Stencil",
+      "Decal",
+      "Template",
+      "Transfer paper"
+    ],
+    "correctAnswer": "Stencil",
+    "category": "arts_crafts",
+    "subcategory": "Craft Supplies",
+    "gameType": "trivia",
+    "answeredCorrectly": true,
+    "timestamp": 1764204378854
+  },
+  {
+    "id": "q_1764204396830_3o570v4m3",
+    "question": "What specialized craft tool, often with a rotating blade, is commonly used for cutting fabric, paper, and other materials with precision, especially useful for quilting or scrapbooking?",
+    "answers": [
+      "Pinking Shears",
+      "Rotary Cutter",
+      "Utility Knife",
+      "Box Cutter"
+    ],
+    "correctAnswer": "Rotary Cutter",
+    "category": "arts_crafts",
+    "subcategory": "Craft Supplies",
+    "gameType": "trivia",
+    "answeredCorrectly": true,
+    "timestamp": 1764204396830
+  },
+  {
+    "id": "q_1764204409713_szyf9i10o",
+    "question": "What common craft supply, often a sticky-backed sheet of material, is used to add sparkle and texture to projects, and comes in various colors and grades of coarseness?",
+    "answers": [
+      "Glitter glue",
+      "Felt sheets",
+      "Sandpaper",
+      "Glitter paper"
+    ],
+    "correctAnswer": "Glitter paper",
+    "category": "arts_crafts",
+    "subcategory": "Craft Supplies",
+    "gameType": "trivia",
+    "answeredCorrectly": true,
+    "timestamp": 1764204409713
+  },
+  {
+    "id": "q_1764204434389_nxdqejwhe",
+    "question": "What common craft supply, often a thick, spongy sheet, is known for its ability to be cut, glued, and shaped easily, making it popular for kids' crafts, costumes, and decorative accents?",
+    "answers": [
+      "Felt sheets",
+      "Foam sheets",
+      "Cardstock",
+      "Balsa wood"
+    ],
+    "correctAnswer": "Foam sheets",
+    "category": "arts_crafts",
+    "subcategory": "Craft Supplies",
+    "gameType": "trivia",
+    "answeredCorrectly": true,
+    "timestamp": 1764204434389
+  },
+  {
+    "id": "q_1764204455773_y15j5q9ew",
+    "question": "What specialized craft supply, often a translucent sheet with a grid or pattern, is used as a base for cross-stitch, needlepoint, and other embroidery projects to help keep stitches even and uniform?",
+    "answers": [
+      "Embroidery Hoop",
+      "Aida Cloth",
+      "Thimble",
+      "Tapestry Needle"
+    ],
+    "correctAnswer": "Aida Cloth",
+    "category": "arts_crafts",
+    "subcategory": "Craft Supplies",
+    "gameType": "trivia",
+    "answeredCorrectly": false,
+    "timestamp": 1764204455773
+  },
+  {
+    "id": "q_1764205865636_dss86nyg4",
+    "question": "Time to get your snack on! Can you name the Top 10 most popular potato chip flavors in the United States?",
+    "listItems": [
+      "Original / Classic",
+      "Cheddar & Sour Cream",
+      "Salt & Vinegar",
+      "BBQ",
+      "Sour Cream & Onion",
+      "Ranch",
+      "Jalapeno",
+      "Dill Pickle",
+      "Flamin' Hot",
+      "Honey BBQ"
+    ],
+    "category": "top_10",
+    "subcategory": "Easy Party Starters",
+    "gameType": "topten",
+    "answeredCorrectly": false,
+    "timestamp": 1764205865636
+  },
+  {
+    "id": "q_1764205865688_zwymkykiz",
+    "question": "Alright party people, let's get loud! Name the top 10 most popular board or card games that are perfect for a casual game night!",
+    "listItems": [
+      "Monopoly",
+      "Uno",
+      "Scrabble",
+      "Chess",
+      "Checkers",
+      "Dominos",
+      "Life",
+      "Sorry!",
+      "Connect 4",
+      "Candyland"
+    ],
+    "category": "top_10",
+    "subcategory": "Easy Party Starters",
+    "gameType": "topten",
+    "answeredCorrectly": false,
+    "timestamp": 1764205865688
+  },
+  {
+    "id": "q_1764206189434_jiapl4pw6",
+    "question": "Alright party people, time to get hydrated! Can you name the Top 10 most popular carbonated soft drinks in the United States?",
+    "listItems": [
+      "Coca-Cola",
+      "Pepsi",
+      "Diet Coke",
+      "Dr. Pepper",
+      "Sprite",
+      "Mountain Dew",
+      "Coke Zero Sugar",
+      "Fanta",
+      "7 Up",
+      "A&W Root Beer"
+    ],
+    "category": "top_10",
+    "subcategory": "Easy Party Starters",
+    "gameType": "topten",
+    "answeredCorrectly": false,
+    "timestamp": 1764206189434
   }
 ]

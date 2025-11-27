@@ -37,39 +37,53 @@ export function saveQuestion(question: QuestionHistory): void {
   fs.writeFileSync(DB_PATH, JSON.stringify(questions, null, 2));
 }
 
-// Get questions that can be recycled (older than 2 hours)
+// Get questions that can be recycled (older than 30 minutes)
 export function getRecyclableQuestions(
   category: string,
   subcategory: string,
   gameType: "trivia" | "topten"
 ): QuestionHistory[] {
   const questions = getAllQuestions();
-  const twoHoursAgo = Date.now() - 2 * 60 * 60 * 1000; // 2 hours in milliseconds
+  const thirtyMinutesAgo = Date.now() - 30 * 60 * 1000; // 30 minutes in milliseconds
 
   return questions.filter(
     (q) =>
       q.category === category &&
       q.subcategory === subcategory &&
       q.gameType === gameType &&
-      q.timestamp < twoHoursAgo
+      q.timestamp < thirtyMinutesAgo
   );
 }
 
-// Get questions asked in the last 2 hours (to avoid)
+// Get questions asked in the last 30 minutes (to avoid)
 export function getRecentQuestions(
   category: string,
   subcategory: string,
   gameType: "trivia" | "topten"
 ): QuestionHistory[] {
   const questions = getAllQuestions();
-  const twoHoursAgo = Date.now() - 2 * 60 * 60 * 1000;
+  const thirtyMinutesAgo = Date.now() - 30 * 60 * 1000;
+
+  // For "all" categories, check ALL recent questions regardless of category/subcategory
+  if (category === "all") {
+    return questions.filter(
+      (q) => q.gameType === gameType && q.timestamp >= thirtyMinutesAgo
+    );
+  }
+
+  // For Top 10 "All Lists" subcategory, check ALL recent Top 10 lists regardless of subcategory
+  if (gameType === "topten" && subcategory === "All Lists") {
+    return questions.filter(
+      (q) => q.gameType === "topten" && q.timestamp >= thirtyMinutesAgo
+    );
+  }
 
   return questions.filter(
     (q) =>
       q.category === category &&
       q.subcategory === subcategory &&
       q.gameType === gameType &&
-      q.timestamp >= twoHoursAgo
+      q.timestamp >= thirtyMinutesAgo
   );
 }
 
@@ -130,13 +144,15 @@ export function getSuccessfulTopics(
   return [...new Set(topics)].slice(-20); // Last 20 unique topics
 }
 
-// Check if a question was recently asked (within 2 hours)
+// Check if a question was recently asked (within 30 minutes)
 export function isQuestionRecent(
   questionText: string,
   category: string,
   subcategory: string,
   gameType: "trivia" | "topten"
 ): boolean {
+  // For "all" categories, check against ALL recent questions (any category/subcategory)
+  // For Top 10 "All Lists", check against ALL recent Top 10 lists
   const recent = getRecentQuestions(category, subcategory, gameType);
   return recent.some(
     (q) => q.question.toLowerCase().trim() === questionText.toLowerCase().trim()
